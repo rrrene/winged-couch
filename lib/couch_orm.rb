@@ -1,5 +1,5 @@
 require "couch_orm/version"
 
-module CouchOrm
+module CouchORM
   # Your code goes here...
 end

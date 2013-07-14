@@ -5,11 +5,11 @@ require 'couch_orm/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "couch_orm"
-  spec.version       = CouchOrm::VERSION
+  spec.version       = CouchORM::VERSION
   spec.authors       = ["Ilya Bylich"]
   spec.email         = ["ilya.bylich@productmadness.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{ORM for CouchDB}
+  spec.summary       = %q{ORM for CouchDB}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "pry"
 end
