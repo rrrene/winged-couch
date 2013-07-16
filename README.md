@@ -1,5 +1,7 @@
 # CouchOrm
 
+[![Build Status](https://travis-ci.org/iliabylich/couch-orm.png?branch=master)](https://travis-ci.org/iliabylich/couch-orm)
+
 TODO: Write a gem description
 
 ## Installation
