@@ -11,4 +11,8 @@ YARD::Rake::YardocTask.new do |t|
   t.options = ["--list-undoc", "--no-private"]
 end
 
-task :default => [:spec, :yard]
+task :separator do
+  puts "\n"
+end
+
+task :default => [:spec, :separator, :yard]
