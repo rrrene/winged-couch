@@ -1,10 +1,5 @@
 # TODO
 
-+ CouchOrm model
-
-``` ruby
-# Example only
-class SomeModel < CouchORM::Model
-  # your code goes here
-end
-```
++ CouchORM modules
+  + Persistence module (Use `CouchORM::HTTP`)
+  + Validation module (check for validation in CouchDB)
