@@ -52,4 +52,9 @@ describe CouchORM::Database do
 
   end
 
+  it "#inspect" do
+    expected_str = "#<CouchORM::Database name='db_name'>"
+    CouchORM::Database.new("db_name").inspect.should eq expected_str
+  end
+
 end

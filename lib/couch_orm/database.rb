@@ -144,7 +144,7 @@ module CouchORM
 
     # @private
     def inspect
-      "#<CouchORM::Database name=\"#{self.name}\""
+      "#<CouchORM::Database name='#{self.name}'>"
     end
 
     alias_method :to_s,   :inspect
