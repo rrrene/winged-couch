@@ -8,6 +8,8 @@ describe CouchORM::Configuration do
   let(:configured_host) { double(:ConfiguredHost) }
   let(:configured_port) { double(:ConfiguredPort) }
 
+  after(:each) { CouchORM.reset_configuration! }
+
   context "#reset_configuration!" do
     it "should reset host" do
       CouchORM.host = configured_host
