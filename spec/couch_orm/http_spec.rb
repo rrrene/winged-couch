@@ -3,7 +3,7 @@ require 'spec_helper'
 describe CouchORM::HTTP, :couch do
 
   let(:http) { CouchORM::HTTP }
-  let(:test_db_url) { "#{couch_db_server}/test_db" }
+  let(:test_db_url) { "/test_db" }
   let(:test_data) { { :asd => "qwe" }.to_json }
 
   after(:each) { http.delete(test_db_url) rescue nil }

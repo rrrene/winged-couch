@@ -4,3 +4,10 @@ class SimpleModel < CouchORM::Model
   attribute :number, Fixnum
   attribute :unsupported, Object
 end
+
+class BlankModel < CouchORM::Model
+end
+
+class OneFieldModel < CouchORM::Model
+  attribute :field, String
+end

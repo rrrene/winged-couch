@@ -7,6 +7,12 @@ module CouchORM
   module HTTP
     class << self
 
+      attr_accessor :host
+
+      def host
+        @host ||= CouchORM.url
+      end
+
       # Send +GET+ request to specified url
       #
       # @param url [String]
@@ -93,7 +99,9 @@ module CouchORM
       private
 
       def perform(request_type, *args, &block)
-        response = JSON.parse RestClient.send(request_type, *args)
+        url = args.shift
+        url = [host, url].join if host
+        response = JSON.parse RestClient.send(request_type, url, *args)
         block.call(response) if block
         response
       end
