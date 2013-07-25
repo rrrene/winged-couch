@@ -23,6 +23,12 @@ module CouchORM
           self.new(attrs).tap(&:save)
         end
 
+        # Returns design views in current database
+        #
+        def views
+          database.design_views.keys
+        end
+
       end
 
       # Constructor

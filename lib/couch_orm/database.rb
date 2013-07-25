@@ -84,7 +84,7 @@ module CouchORM
     # @private
     #
     def ==(other)
-      name == other.name
+      other.is_a?(CouchORM::Database) && name == other.name
     end
 
     # Drops the database
@@ -149,6 +149,18 @@ module CouchORM
 
     alias_method :to_s,   :inspect
     alias_method :to_str, :inspect
+
+    # Returns CouchORM design document defined in current database
+    #
+    def design_document
+      get("/_design/couch_orm")
+    end
+
+    # Returns all design views defined in CouchORM design document in current database
+    #
+    def design_views
+      design_document["views"]
+    end
 
   end
 end
