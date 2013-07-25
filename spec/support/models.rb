@@ -11,3 +11,9 @@ end
 class OneFieldModel < CouchORM::Model
   attribute :field, String
 end
+
+class ModelWithDesignDoc < CouchORM::Model
+  attribute :type, String
+
+  view :strings, client: true
+end

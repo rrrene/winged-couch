@@ -65,4 +65,8 @@ describe CouchORM::Configuration do
     CouchORM.stub(:url => "url")
     CouchORM.inspect.should eq "#<CouchORM connected to url>"
   end
+
+  it ".logger" do
+    CouchORM.logger.should be_a Logger
+  end
 end

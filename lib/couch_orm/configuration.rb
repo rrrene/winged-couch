@@ -1,3 +1,5 @@
+require 'logger'
+
 module CouchORM
 
   # Main configuration module
@@ -27,6 +29,7 @@ module CouchORM
 
     attr_writer :host
     attr_writer :port
+    attr_writer :logger
 
     # Returns CouchDB host
     #
@@ -51,6 +54,12 @@ module CouchORM
     #
     def url
       "#{host}:#{port}"
+    end
+
+    # Returns CouchORM logger
+    #
+    def logger
+      @logger ||= Logger.new(STDOUT)
     end
 
     # @private
