@@ -1,4 +1,5 @@
 require "couch_orm/configuration"
+require "couch_orm/exceptions"
 
 # Main module
 #
