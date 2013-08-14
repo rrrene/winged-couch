@@ -37,11 +37,6 @@ module CouchORM
     # @private
     RESERVED_DATABASES = ["_users"]
 
-    # @private
-    class ReservedDatabase < StandardError; end
-    # @private
-    class DatabaseAlreadyExist < StandardError; end
-
     class << self
 
       # Returns all databases
@@ -65,12 +60,13 @@ module CouchORM
       # @param name [String] name of database
       #
       # @return [CouchORM::Database]
+      # @raise [CouchORM::DatabaseAlreadyExist] if database already exist
       #
       def create(name)
-        self.new(name).tap do |db|
-          raise DatabaseAlreadyExist if db.exist?
-          CouchORM::HTTP.put("/#{name}")
-        end
+        CouchORM::HTTP.put("/#{name}")
+        self.new(name)
+      rescue => e
+        raise CouchORM::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
       end
 
     end
@@ -92,10 +88,16 @@ module CouchORM
     # @raise [ReservedDatabase] if database name is reserved
     #
     # @return [String] response from CouchDB
+    # @raise [CouchORM::ReservedDatabase] if database is internal
+    #
+    # @raise [CouchORM::NoDatabase] if database doesn't exist
     #
     def drop
-      raise ReservedDatabase if RESERVED_DATABASES.include?(name)
-      !!CouchORM::HTTP.delete("/#{name}") rescue false
+      raise CouchORM::ReservedDatabase.new("Database \"#{self.name}\" is internal, you can't remove it.") if RESERVED_DATABASES.include?(name)
+      CouchORM::HTTP.delete("/#{name}")
+      true
+    rescue => e
+      raise CouchORM::NoDatabase.new("Can't drop database \"#{self.name}\" because it doesn't exist.")
     end
 
     # Returns true if database exist in CouchDB
@@ -103,7 +105,10 @@ module CouchORM
     # @return [true, false]
     #
     def exist?
-      !!CouchORM::HTTP.get("/#{name}") rescue false
+      CouchORM::HTTP.get("/#{name}")
+      true
+    rescue => e
+      false
     end
 
     # Creates database with name `name`
@@ -154,12 +159,16 @@ module CouchORM
     #
     def design_document
       get("/_design/couch_orm")
+    rescue => e
+      raise CouchORM::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
     end
 
     # Returns all design views defined in CouchORM design document in current database
     #
     def design_views
       design_document["views"]
+    rescue => e
+      raise CouchORM::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
     end
 
   end

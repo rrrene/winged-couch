@@ -8,10 +8,20 @@ describe CouchORM::Database do
     CouchORM::Database.all.map(&:name).should include "_users"
   end
 
-  it ".create" do
-    db = CouchORM::Database.create("my_db")
-    CouchORM::Database.all.should include db
-    db.name.should eq "my_db"
+  context ".create" do
+
+    it "creates database" do
+      db = CouchORM::Database.create("my_db")
+      CouchORM::Database.all.should include db
+      db.name.should eq "my_db"
+    end
+
+    it "raises exception if database already exist" do
+      expect {
+        CouchORM::Database.create("my_db")
+        CouchORM::Database.create("my_db")
+      }.to raise_error(CouchORM::DatabaseAlreadyExist)
+    end
   end
 
   it "#drop" do
@@ -55,6 +65,18 @@ describe CouchORM::Database do
   it "#inspect" do
     expected_str = "#<CouchORM::Database name='db_name'>"
     CouchORM::Database.new("db_name").inspect.should eq expected_str
+  end
+
+  it "#design_document" do
+    expect {
+      CouchORM::Database.new("db_name").design_document
+    }.to raise_error(CouchORM::NoDesignDocument)
+  end
+
+  it "#design_views" do
+    expect {
+      CouchORM::Database.new("db_name").design_views
+    }.to raise_error(CouchORM::NoDesignDocument)
   end
 
 end
