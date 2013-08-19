@@ -17,3 +17,4 @@ require "couch_orm/database"
 require "couch_orm/view"
 require "couch_orm/model"
 require 'couch_orm/views_loader'
+require 'couch_orm/query_builder'
