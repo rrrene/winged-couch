@@ -36,7 +36,7 @@ module CouchORM
     # @return [String]
     #
     def host
-      @host ||= "127.0.0.1"
+      @host ||= ENV["COUCHDB_HOST"] || "127.0.0.1"
     end
 
     # Returns CouchDB port
@@ -44,7 +44,7 @@ module CouchORM
     # @return [Fixnum]
     #
     def port
-      @port ||= 5984
+      @port ||= ENV["COUCHDB_PORT"] || "5984"
     end
 
     # Returns CouchDB url

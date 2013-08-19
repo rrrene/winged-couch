@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe CouchORM::Configuration do
 
-  let(:default_host) { "127.0.0.1" }
-  let(:default_port) { 5984 }
+  let(:default_host) { ENV["COUCHDB_HOST"] || "127.0.0.1" }
+  let(:default_port) { ENV["COUCHDB_PORT"] || "5984" }
 
   let(:configured_host) { double(:ConfiguredHost) }
   let(:configured_port) { double(:ConfiguredPort) }
