@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CouchORM::Models::Query do
+describe CouchORM::Models::Views do
 
   context ".design" do
 

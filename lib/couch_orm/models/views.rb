@@ -3,7 +3,7 @@ module CouchORM
 
     # Module for defining query-methods
     #
-    module Query
+    module Views
 
       def self.included(klass)
         klass.extend(ClassMethods)

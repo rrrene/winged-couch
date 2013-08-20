@@ -37,7 +37,13 @@ module CouchORM
       #
       def initialize(attrs = {})
         attrs.each do |attribute, value|
-          send("#{attribute}=", value)
+          if attribute.to_s == "id"
+            send("_id=", value)
+          elsif attribute.to_s == "rev"
+            send("_rev=", value)
+          else
+            send("#{attribute}=", value)
+          end
         end
       end
 

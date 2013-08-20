@@ -40,7 +40,7 @@ describe CouchORM::View do
 
   context ".all" do
     it "returns views if database exist" do
-      expected_data = [CouchORM::View.new(database, "all"), CouchORM::View.new(database, "strings")]
+      expected_data = [CouchORM::View.new(database, "all"), CouchORM::View.new(database, "strings"), CouchORM::View.new(database, "four")]
       CouchORM::View.all(database).should eq expected_data
     end
 
@@ -51,7 +51,7 @@ describe CouchORM::View do
   end
 
   it ".names" do
-    CouchORM::View.names(database).should eq ["all", "strings"]
+    CouchORM::View.names(database).should eq ["all", "strings", "four"]
   end
 
   it "#inspect" do
