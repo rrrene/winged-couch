@@ -52,6 +52,11 @@ module CouchORM
         "#<#{self.class.name} " + attributes.merge(_id: _id, _rev: _rev).map { |k, v| "#{k}: #{v.inspect}" }.join(", ") + ">"
       end
 
+      # @private
+      def ==(other)
+        other.is_a?(self.class) && other._id == self._id
+      end
+
       alias_method :to_s,   :inspect
       alias_method :to_str, :inspect
 

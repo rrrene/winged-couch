@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CouchORM::QueryBuilder do
+describe CouchORM::Queries::BaseBuilder do
   let(:default_builder) { described_class.new }
   let(:database) { CouchORM::Database.new("db") }
 

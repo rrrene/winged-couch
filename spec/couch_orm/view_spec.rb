@@ -5,6 +5,7 @@ describe CouchORM::View do
   let(:model) { ModelWithDesignDoc }
   let(:view_loader) { CouchORM::ViewsLoader }
   let(:database) { model.database }
+  let(:view_names) { ["all", "strings", "by_name", "four", "key_objects"] }
 
   let(:view) { CouchORM::View.new(database, "strings") }
   let(:non_existing_view) { CouchORM::View.new(database, "non_existing_view") }
@@ -40,7 +41,7 @@ describe CouchORM::View do
 
   context ".all" do
     it "returns views if database exist" do
-      expected_data = [CouchORM::View.new(database, "all"), CouchORM::View.new(database, "strings"), CouchORM::View.new(database, "four")]
+      expected_data = view_names.map { |view| CouchORM::View.new(database, view) }
       CouchORM::View.all(database).should eq expected_data
     end
 
@@ -51,7 +52,7 @@ describe CouchORM::View do
   end
 
   it ".names" do
-    CouchORM::View.names(database).should eq ["all", "strings", "four"]
+    CouchORM::View.names(database).should eq view_names
   end
 
   it "#inspect" do
