@@ -4,7 +4,7 @@ describe CouchORM::ViewsLoader do
 
   let(:model) { ModelWithDesignDoc }
   let(:loader) { CouchORM::ViewsLoader }
-  let(:views) { ["all", "strings", "four"] }
+  let(:views) { ["all", "strings", "by_name", "four", "key_objects"] }
 
   before(:each) do
     loader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")

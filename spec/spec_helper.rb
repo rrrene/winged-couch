@@ -15,3 +15,9 @@ RSpec.configure do |config|
   config.order = 'random'
   config.include CouchHelper, :couch
 end
+
+
+def upload_views(klass)
+  CouchORM::ViewsLoader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
+  CouchORM::ViewsLoader.upload_views_for(klass)
+end

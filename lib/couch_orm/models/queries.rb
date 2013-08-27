@@ -5,46 +5,6 @@ module CouchORM
     #
     module Queries
 
-      # @private
-      class QueryBuilderWrapper
-
-        def method_missing(method_name, *args)
-          @result = query_builder.send(method_name, *args)
-          if method_name.to_s == "perform"
-            process_result
-          else
-            self
-          end
-        end
-
-        def process_result
-          case @strategy
-          when "view:map"
-            @result["rows"].map { |attrs| @model.new(attrs["key"]) }
-          when "view:map:reduce"
-            @result["rows"].first["value"]
-          else
-            raise RuntimeError, "Unknown query strategy #{@strategy}"
-          end
-        end
-
-        def with_model(model)
-          @model = model
-          self
-        end
-
-        def with_strategy(strategy)
-          @strategy = strategy
-          self
-        end
-
-        private
-
-        def query_builder
-          @query_builder ||= CouchORM::QueryBuilder.new
-        end
-      end
-
       # Main method for building queries to CouchDB design views
       #
       # @param options [Hash]
@@ -59,35 +19,26 @@ module CouchORM
       #   # => 5
       #
       def build(options = {})
-        options.each do |key, value|
-          return send("build_#{key}", value)
-        end
+        view, show = options.values_at(:view, :show)
+        return build_view(view) if view
+        return build_show(show) if show
       end
 
       private
 
-      def query
-        CouchORM::Models::Queries::QueryBuilderWrapper.new.with_model(self)
-      end
-
-      def build_view(view_name)
-        query.
-          with_strategy(find_strategy_for_view(view_name)).
-          with_path("/_design/couch_orm/_view/#{view_name}").
+      def default_query
+        CouchORM::Queries::QueryBuilder.new.
+          with_model(self).
           with_database(self.database)
       end
 
-      def find_strategy_for_view(view_name)
-        functions = database.design_views[view_name].keys
-        case functions
-        when ["map"]
-          "view:map"
-        when ["map", "reduce"]
-          "view:map:reduce"
-        else
-          "unknown"
-        end
+      def build_view(view_name)
+        view = CouchORM::View.new(database, view_name)
+        default_query.
+          with_strategy(view.strategy).
+          with_path("/_design/couch_orm/_view/#{view_name}")
       end
+
     end
   end
 end

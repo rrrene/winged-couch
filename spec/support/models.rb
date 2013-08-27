@@ -14,6 +14,7 @@ end
 
 class ModelWithDesignDoc < CouchORM::Model
   attribute :type, String
+  attribute :name, String
 
   view :strings, client: true
 end

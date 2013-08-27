@@ -75,6 +75,15 @@ module CouchORM
     alias_method :to_s, :inspect
     alias_method :to_str, :inspect
 
+    # @private
+    def strategy
+      case source.keys
+      when ["map"]           then "view:map"
+      when ["map", "reduce"] then "view:map:reduce"
+      else "unknown"
+      end
+    end
+
     class << self
 
       # Returns all views in specified database

@@ -1,3 +1,5 @@
+require 'couch_orm/core_ext/chain_accessor'
+
 require "couch_orm/configuration"
 require "couch_orm/exceptions"
 
@@ -17,4 +19,4 @@ require "couch_orm/database"
 require "couch_orm/view"
 require "couch_orm/model"
 require 'couch_orm/views_loader'
-require 'couch_orm/query_builder'
+require 'couch_orm/queries/query_builder'
