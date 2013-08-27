@@ -1,0 +1,30 @@
+class CouchORM.Model
+  constructor: (data) ->
+    for k, v of data
+      @[k] = v
+
+  @database: () ->
+    new Couch.Database(CouchORM.server, @db_name);
+
+  @from: (data) ->
+    new this(data)
+
+  @find: (_id, callback) ->
+    throw("No callback passed") unless callback
+    @database().get _id, (data) =>
+      callback(@.from(data))
+
+  @build: (data) ->
+    throw "Only 'view' type is supported yet." unless data.view
+    new CouchORM.View(data.view, this)
+
+# Defined models
+#
+<% CouchORM::Model.subclasses.each do |klass| %>
+class @<%= klass.name %> extends CouchORM.Model
+
+  @db_name = "<%= klass.name.downcase %>"
+
+  constructor: (data) ->
+    super
+<% end %>
