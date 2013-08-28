@@ -1,4 +1,3 @@
-require 'winged_couch/queries/base_builder'
 require 'winged_couch/queries/strategies'
 require 'winged_couch/queries/dsl'
 

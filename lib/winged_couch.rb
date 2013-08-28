@@ -18,13 +18,18 @@ module WingedCouch
       load "tasks/winged_couch.rake"
     end
   end if defined? Rails
+
+  autoload :HTTP,        'winged_couch/http'
+  autoload :Database,    'winged_couch/database'
+  autoload :View,        'winged_couch/view'
+  autoload :Model,       'winged_couch/model'
+  autoload :ViewsLoader, 'winged_couch/views_loader'
+
+  module Queries
+    autoload :BaseBuilder,  'winged_couch/queries/base_builder'
+    autoload :QueryBuilder, 'winged_couch/queries/query_builder'
+  end
 end
 
 require 'rest-client'
 require "winged_couch/version"
-require "winged_couch/http"
-require "winged_couch/database"
-require "winged_couch/view"
-require "winged_couch/model"
-require 'winged_couch/views_loader'
-require 'winged_couch/queries/query_builder'
