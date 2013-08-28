@@ -1,6 +1,6 @@
 # CouchOrm
 
-[![Build Status](https://travis-ci.org/iliabylich/couch-orm.png?branch=master)](https://travis-ci.org/iliabylich/couch-orm)
+[![Build Status](https://travis-ci.org/iliabylich/winged-couch.png?branch=master)](https://travis-ci.org/iliabylich/winged-couch)
 
 TODO: Write a gem description
 
