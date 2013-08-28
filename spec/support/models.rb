@@ -16,5 +16,5 @@ class ModelWithDesignDoc < WingedCouch::Model
   attribute :type, String
   attribute :name, String
 
-  view :strings, client: true
+  # view :strings, client: true
 end

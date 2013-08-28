@@ -25,7 +25,12 @@ module WingedCouch
       #
       def perform(options = {})
         @result = super
-        options[:raw] ? @result : (processed_result rescue @result)
+
+        if options[:raw]
+          @result
+        else
+          process_strategy[@result, @model] rescue @result
+        end
       end
 
       parameter :descending,     :boolean
@@ -48,10 +53,10 @@ module WingedCouch
 
       private
 
-      def processed_result
+      def process_strategy
         case strategy
-        when "view:map"        then map_strategy        # see Strategies
-        when "view:map:reduce" then map_reduce_strategy # see Strategies
+        when "view:map"        then method(:map_strategy)        # see Strategies
+        when "view:map:reduce" then method(:map_reduce_strategy) # see Strategies
         else
           raise RuntimeError, "Unknown query strategy #{@strategy}"
         end

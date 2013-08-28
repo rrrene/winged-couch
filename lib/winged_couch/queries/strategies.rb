@@ -6,15 +6,15 @@ module WingedCouch
 
       protected
 
-      def map_strategy
-        @result["rows"].map do |data|
+      def map_strategy(response, model)
+        response["rows"].map do |data|
           attrs = data.values_at("key", "value", "values").detect { |v| v.is_a?(Hash) }
-          @model.new(attrs)
+          model.new(attrs)
         end
       end
 
-      def map_reduce_strategy
-        @result["rows"].first["value"]
+      def map_reduce_strategy(response, model)
+        response["rows"].first["value"]
       end
 
     end
