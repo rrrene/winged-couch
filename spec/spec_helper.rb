@@ -1,7 +1,7 @@
 require 'simplecov'
 SimpleCov.start
 
-require 'couch_orm'
+require 'winged_couch'
 require 'pry'
 
 GEM_ROOT = File.expand_path("../../", __FILE__)
@@ -18,6 +18,6 @@ end
 
 
 def upload_views(klass)
-  CouchORM::ViewsLoader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
-  CouchORM::ViewsLoader.upload_views_for(klass)
+  WingedCouch::ViewsLoader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
+  WingedCouch::ViewsLoader.upload_views_for(klass)
 end

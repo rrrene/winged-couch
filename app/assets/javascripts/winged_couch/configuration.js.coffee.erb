@@ -1,0 +1,19 @@
+@WingedCouch =
+  host: "http://<%= WingedCouch.url %>"
+  server: null
+  callbacks: []
+  loaded: false
+
+  ready: (fn) ->
+    if @loaded
+      fn()
+    else
+      @callbacks.push(fn)
+
+
+Couch.init ->
+  WingedCouch.loaded = true
+  WingedCouch.server = new Couch.Server(WingedCouch.host)
+
+  for callback in WingedCouch.callbacks
+    callback()

@@ -32,7 +32,7 @@
     else if (instance.iFrame.attachEvent)
       instance.iFrame.attachEvent("onload", onloadHandler);
 
-    instance.iFrame.src = instance.origin + "/couch-orm/_design/couch-orm/receiver.html";
+    instance.iFrame.src = instance.origin + "/winged-couch/_design/winged-couch/receiver.html";
     if (typeof onload == "function") {
       instance.onload = onload;
       instance.init();
