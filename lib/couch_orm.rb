@@ -10,6 +10,14 @@ module CouchORM
 
   # @private
   JAVASCRIPTS_PATH = File.expand_path("../couch_orm/javascripts", __FILE__)
+
+  # @private
+  class Engine < ::Rails::Engine
+
+    rake_tasks do
+      load "tasks/couch_orm.rake"
+    end
+  end if defined? Rails
 end
 
 require 'rest-client'

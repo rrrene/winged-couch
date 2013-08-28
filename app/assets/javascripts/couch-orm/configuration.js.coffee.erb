@@ -1,0 +1,19 @@
+@CouchORM =
+  host: "http://<%= CouchORM.url %>"
+  server: null
+  callbacks: []
+  loaded: false
+
+  ready: (fn) ->
+    if @loaded
+      fn()
+    else
+      @callbacks.push(fn)
+
+
+Couch.init ->
+  CouchORM.loaded = true
+  CouchORM.server = new Couch.Server(CouchORM.host)
+
+  for callback in CouchORM.callbacks
+    callback()

@@ -108,7 +108,8 @@ module CouchORM
       CouchORM::HTTP.get("/#{name}")
       true
     rescue => e
-      false
+      return false if e.respond_to?(:http_code) && e.http_code == 404
+      raise e
     end
 
     # Creates database with name `name`
