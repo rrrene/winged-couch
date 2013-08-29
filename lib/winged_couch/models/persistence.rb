@@ -106,6 +106,14 @@ module WingedCouch
         @_errors ||= []
       end
 
+      def update(attrs = {})
+        attrs.each do |name, value|
+          public_send("#{name}=", value)
+        end
+        self.save
+        true
+      end
+
       private
 
       def serialize_to_json

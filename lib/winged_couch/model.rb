@@ -12,6 +12,17 @@ module WingedCouch
     include ::WingedCouch::Models::Persistence
     include ::WingedCouch::Models::API
     extend  ::WingedCouch::Models::Queries
+
+    if defined?(ActiveModel) # Rails support
+      extend  ActiveModel::Naming
+      extend  ActiveModel::Translation
+      include ActiveModel::Validations
+      include ActiveModel::Conversion
+
+      def to_key
+        [_id]
+      end
+    end
   end
 
 end

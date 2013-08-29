@@ -23,6 +23,16 @@ module WingedCouch
           self.new(attrs).tap(&:save)
         end
 
+        # Finds record in CoucDB
+        #
+        # @param _id [String] id of record
+        #
+        # @return [WingedCouch::Model]
+        #
+        def find(_id)
+          self.new(database.get("/#{_id}"))
+        end
+
         # Returns design views in current database
         #
         def views
