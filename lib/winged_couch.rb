@@ -24,6 +24,7 @@ module WingedCouch
   autoload :View,        'winged_couch/view'
   autoload :Model,       'winged_couch/model'
   autoload :ViewsLoader, 'winged_couch/views_loader'
+  autoload :Server,      'winged_couch/server'
 
   module Queries
     autoload :BaseBuilder,  'winged_couch/queries/base_builder'
