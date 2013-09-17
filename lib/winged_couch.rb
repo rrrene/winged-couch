@@ -19,12 +19,15 @@ module WingedCouch
     end
   end if defined? Rails
 
+  module Native
+    autoload :Server,      'winged_couch/native/server'
+    autoload :Database,    'winged_couch/native/database'
+    autoload :View,        'winged_couch/native/view'
+  end
+
   autoload :HTTP,        'winged_couch/http'
-  autoload :Database,    'winged_couch/database'
-  autoload :View,        'winged_couch/view'
   autoload :Model,       'winged_couch/model'
   autoload :ViewsLoader, 'winged_couch/views_loader'
-  autoload :Server,      'winged_couch/server'
 
   module Queries
     autoload :BaseBuilder,  'winged_couch/queries/base_builder'

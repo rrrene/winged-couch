@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe WingedCouch::Server do
+describe WingedCouch::Native::Server do
 
-  subject(:server) { WingedCouch::Server }
+  subject(:server) { WingedCouch::Native::Server }
 
   its(:info)         { should have_key("couchdb") }
   its(:all_dbs)      { should include("_users") }

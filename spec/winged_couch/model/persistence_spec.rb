@@ -15,7 +15,7 @@ describe WingedCouch::Models::Persistence do
   end
 
   it ".database" do
-    OneFieldModel.database.should be_instance_of WingedCouch::Database
+    OneFieldModel.database.should be_instance_of WingedCouch::Native::Database
     OneFieldModel.database.exist?.should be_true
   end
 

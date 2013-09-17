@@ -4,7 +4,7 @@ namespace :winged_couch do
 
     design_doc = "/_design/winged-couch"
 
-    database = WingedCouch::Database.new("winged-couch")
+    database = WingedCouch::Native::Database.new("winged-couch")
     database.create unless database.exist?
 
     begin

@@ -33,7 +33,7 @@ module WingedCouch
       end
 
       def build_view(view_name)
-        view = WingedCouch::View.new(database, view_name)
+        view = WingedCouch::Native::View.new(database, view_name)
         default_query.
           with_strategy(view.strategy).
           with_path("/_design/winged_couch/_view/#{view_name}")
