@@ -1,44 +1,44 @@
 require 'spec_helper'
 
-describe WingedCouch::Database do
+describe WingedCouch::Native::Database do
 
-  before(:each) { WingedCouch::Database.each { |db| db.drop rescue nil } }
+  before(:each) { WingedCouch::Native::Database.each { |db| db.drop rescue nil } }
 
   it ".all" do
-    WingedCouch::Database.all.map(&:name).should include "_users"
+    WingedCouch::Native::Database.all.map(&:name).should include "_users"
   end
 
   context ".create" do
 
     it "creates database" do
-      db = WingedCouch::Database.create("my_db")
-      WingedCouch::Database.all.should include db
+      db = WingedCouch::Native::Database.create("my_db")
+      WingedCouch::Native::Database.all.should include db
       db.name.should eq "my_db"
     end
 
     it "raises exception if database already exist" do
       expect {
-        WingedCouch::Database.create("my_db")
-        WingedCouch::Database.create("my_db")
+        WingedCouch::Native::Database.create("my_db")
+        WingedCouch::Native::Database.create("my_db")
       }.to raise_error(WingedCouch::DatabaseAlreadyExist)
     end
   end
 
   it "#drop" do
-    db = WingedCouch::Database.create("my_db")
+    db = WingedCouch::Native::Database.create("my_db")
     db.drop
-    WingedCouch::Database.all.should_not include db
+    WingedCouch::Native::Database.all.should_not include db
   end
 
   it "#exist?" do
-    WingedCouch::Database.create("my_db")
-    expect(WingedCouch::Database.new("my_db").exist?).to be_true
-    expect(WingedCouch::Database.new("non_existing_db").exist?).to be_false
+    WingedCouch::Native::Database.create("my_db")
+    expect(WingedCouch::Native::Database.new("my_db").exist?).to be_true
+    expect(WingedCouch::Native::Database.new("non_existing_db").exist?).to be_false
   end
 
   context "delegation to WingedCouch::HTTP" do
 
-    let(:db) { WingedCouch::Database.new("db_name") }
+    let(:db) { WingedCouch::Native::Database.new("db_name") }
 
     it "#get" do
       WingedCouch::HTTP.should_receive(:get).with("/db_name/123")
@@ -63,19 +63,19 @@ describe WingedCouch::Database do
   end
 
   it "#inspect" do
-    expected_str = "#<WingedCouch::Database name='db_name'>"
-    WingedCouch::Database.new("db_name").inspect.should eq expected_str
+    expected_str = "#<WingedCouch::Native::Database name='db_name'>"
+    WingedCouch::Native::Database.new("db_name").inspect.should eq expected_str
   end
 
   it "#design_document" do
     expect {
-      WingedCouch::Database.new("db_name").design_document
+      WingedCouch::Native::Database.new("db_name").design_document
     }.to raise_error(WingedCouch::NoDesignDocument)
   end
 
   it "#design_views" do
     expect {
-      WingedCouch::Database.new("db_name").design_views
+      WingedCouch::Native::Database.new("db_name").design_views
     }.to raise_error(WingedCouch::NoDesignDocument)
   end
 

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe WingedCouch::Queries::BaseBuilder do
   let(:default_builder) { described_class.new }
-  let(:database) { WingedCouch::Database.new("db") }
+  let(:database) { WingedCouch::Native::Database.new("db") }
 
   context "not configured" do
     subject(:builder) { default_builder }

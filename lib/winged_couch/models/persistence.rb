@@ -20,7 +20,7 @@ module WingedCouch
         # @return [WingedCouch::Database]
         #
         def database
-          @database ||= WingedCouch::Database.new(database_name)
+          @database ||= WingedCouch::Native::Database.new(database_name)
         end
 
         # Returns ids of all records in database for current model

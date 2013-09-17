@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe WingedCouch::View do
+describe WingedCouch::Native::View do
 
   let(:model) { ModelWithDesignDoc }
   let(:view_loader) { WingedCouch::ViewsLoader }
   let(:database) { model.database }
   let(:view_names) { ["all", "strings", "by_name", "four", "key_objects"] }
 
-  let(:view) { WingedCouch::View.new(database, "strings") }
-  let(:non_existing_view) { WingedCouch::View.new(database, "non_existing_view") }
+  let(:view) { WingedCouch::Native::View.new(database, "strings") }
+  let(:non_existing_view) { WingedCouch::Native::View.new(database, "non_existing_view") }
 
   around(:each) do |example|
     database.create
@@ -41,22 +41,22 @@ describe WingedCouch::View do
 
   context ".all" do
     it "returns views if database exist" do
-      expected_data = view_names.map { |view| WingedCouch::View.new(database, view) }
-      WingedCouch::View.all(database).should eq expected_data
+      expected_data = view_names.map { |view| WingedCouch::Native::View.new(database, view) }
+      WingedCouch::Native::View.all(database).should eq expected_data
     end
 
     it "returns blank array if database doesn't exist" do
-      non_existing_database = WingedCouch::Database.new("non_existing_database")
-      WingedCouch::View.all(non_existing_database).should eq []
+      non_existing_database = WingedCouch::Native::Database.new("non_existing_database")
+      WingedCouch::Native::View.all(non_existing_database).should eq []
     end
   end
 
   it ".names" do
-    WingedCouch::View.names(database).should eq view_names
+    WingedCouch::Native::View.names(database).should eq view_names
   end
 
   it "#inspect" do
-    WingedCouch::View.new(database, "test_view").inspect.should eq "#<WingedCouch::View name='test_view', database='model_with_design_doc'>"
+    WingedCouch::Native::View.new(database, "test_view").inspect.should eq "#<WingedCouch::View name='test_view', database='model_with_design_doc'>"
   end
 
 end
