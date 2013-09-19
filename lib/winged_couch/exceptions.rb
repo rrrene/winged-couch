@@ -1,10 +1,7 @@
 module WingedCouch
-  # @private
-  NoDatabase           = Class.new(StandardError)
-  # @private
-  DatabaseAlreadyExist = Class.new(StandardError)
-  # @private
-  ReservedDatabase     = Class.new(StandardError)
-  # @private
-  NoDesignDocument     = Class.new(StandardError)
+  module Exceptions
+    def self.const_missing(const_name)
+      const_set const_name, Class.new(StandardError)
+    end
+  end
 end

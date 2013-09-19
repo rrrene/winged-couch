@@ -23,6 +23,7 @@ module WingedCouch
     autoload :Server,      'winged_couch/native/server'
     autoload :Database,    'winged_couch/native/database'
     autoload :View,        'winged_couch/native/view'
+    autoload :Document,    'winged_couch/native/document'
   end
 
   autoload :HTTP,        'winged_couch/http'
