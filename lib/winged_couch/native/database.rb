@@ -68,7 +68,7 @@ module WingedCouch
           WingedCouch::HTTP.put("/#{name}")
           self.new(name)
         rescue => e
-          raise WingedCouch::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
+          raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
         end
 
       end
@@ -82,7 +82,7 @@ module WingedCouch
       # @private
       #
       def ==(other)
-        other.is_a?(WingedCouch::Native::Database) && name == other.name
+        other.is_a?(self.class) && name == other.name
       end
 
       # Drops the database
@@ -95,11 +95,11 @@ module WingedCouch
       # @raise [WingedCouch::NoDatabase] if database doesn't exist
       #
       def drop
-        raise WingedCouch::ReservedDatabase.new("Database \"#{self.name}\" is internal, you can't remove it.") if RESERVED_DATABASES.include?(name)
+        raise Exceptions::ReservedDatabase.new("Database \"#{self.name}\" is internal, you can't remove it.") if RESERVED_DATABASES.include?(name)
         WingedCouch::HTTP.delete("/#{name}")
         true
       rescue => e
-        raise WingedCouch::NoDatabase.new("Can't drop database \"#{self.name}\" because it doesn't exist.")
+        raise Exceptions::NoDatabase.new("Can't drop database \"#{self.name}\" because it doesn't exist.")
       end
 
       # Returns true if database exist in CouchDB
@@ -163,7 +163,7 @@ module WingedCouch
       def design_document
         get("/_design/winged_couch")
       rescue => e
-        raise WingedCouch::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
       end
 
       # Returns all design views defined in WingedCouch design document in current database
@@ -171,7 +171,7 @@ module WingedCouch
       def design_views
         design_document["views"]
       rescue => e
-        raise WingedCouch::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
       end
 
     end

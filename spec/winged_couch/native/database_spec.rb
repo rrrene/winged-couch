@@ -20,7 +20,7 @@ describe WingedCouch::Native::Database do
       expect {
         WingedCouch::Native::Database.create("my_db")
         WingedCouch::Native::Database.create("my_db")
-      }.to raise_error(WingedCouch::DatabaseAlreadyExist)
+      }.to raise_error(WingedCouch::Exceptions::DatabaseAlreadyExist)
     end
   end
 
@@ -70,13 +70,13 @@ describe WingedCouch::Native::Database do
   it "#design_document" do
     expect {
       WingedCouch::Native::Database.new("db_name").design_document
-    }.to raise_error(WingedCouch::NoDesignDocument)
+    }.to raise_error(WingedCouch::Exceptions::NoDesignDocument)
   end
 
   it "#design_views" do
     expect {
       WingedCouch::Native::Database.new("db_name").design_views
-    }.to raise_error(WingedCouch::NoDesignDocument)
+    }.to raise_error(WingedCouch::Exceptions::NoDesignDocument)
   end
 
 end
