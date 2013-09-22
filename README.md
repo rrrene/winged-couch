@@ -2,25 +2,9 @@
 
 [![Build Status](https://travis-ci.org/iliabylich/winged-couch.png?branch=master)](https://travis-ci.org/iliabylich/winged-couch)
 
-TODO: Write a gem description
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'couch_orm'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install couch_orm
-
 ## Usage
 
-TODO: Write usage instructions here
+[Wiki](https://github.com/iliabylich/winged-couch/wiki)
 
 ## Contributing
 
