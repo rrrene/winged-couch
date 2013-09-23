@@ -1,38 +1,46 @@
 require 'spec_helper'
 
-describe WingedCouch::ViewsLoader do
+module WingedCouch
+  describe ViewsLoader do
 
-  let(:model) { ModelWithDesignDoc }
-  let(:loader) { WingedCouch::ViewsLoader }
-  let(:views) { ["all", "strings", "by_name", "four", "key_objects"] }
+    let(:model) { ModelWithDesignDoc }
+    let(:loader) { ViewsLoader }
+    let(:views) { ["all", "strings", "by_name", "four", "key_objects"] }
 
-  before(:each) do
-    loader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
-  end
-
-  around(:each) do |example|
-    begin
-      model.database.create
-      example.run
-    ensure
-      model.database.drop
-    end
-  end
-
-  it "should load JS fucntions from specified file" do
-    loader.fetch(model).keys.should eq views
-  end
-
-  context "sending it to CouchDB" do
-    it "creates it" do
-      loader.upload_views_for(model)
-      model.views.should eq views
+    before(:each) do
+      loader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
     end
 
-    it "updates it" do
-      2.times { loader.upload_views_for(model) }
-      model.views.should eq views
+    around(:each) do |example|
+      begin
+        ModelWithDesignDoc.database.create
+        example.run
+      ensure
+        ModelWithDesignDoc.database.drop
+      end
     end
-  end
 
+    describe ".fetch" do
+      it "loads JS fucntions from specified file" do
+        ViewsLoader.fetch(ModelWithDesignDoc).keys.should eq views
+      end
+    end
+
+    describe ".upload_views_for" do
+      it "it creates views" do
+        ViewsLoader.upload_views_for(ModelWithDesignDoc)
+        ModelWithDesignDoc.views.should eq views
+      end
+
+      context "updating" do
+        before { ViewsLoader.upload_views_for(ModelWithDesignDoc) }
+
+        it "updates it" do          
+          ViewsLoader.upload_views_for(ModelWithDesignDoc)
+          ModelWithDesignDoc.views.should eq views
+        end
+      end
+    end
+
+  end
 end

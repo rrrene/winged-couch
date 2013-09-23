@@ -1,5 +1,8 @@
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  add_filter "/spec/"
+  add_filter "/templates/"
+end
 
 require 'winged_couch'
 require 'pry'

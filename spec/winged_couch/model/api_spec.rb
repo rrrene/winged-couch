@@ -3,9 +3,12 @@ require 'spec_helper'
 describe WingedCouch::Models::API do
 
   around(:each) do |example|
-    OneFieldModel.database.create
-    example.run
-    OneFieldModel.database.drop
+    begin
+      OneFieldModel.database.create
+      example.run
+    ensure
+      OneFieldModel.database.drop
+    end
   end
 
   it "#new" do

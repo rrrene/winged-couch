@@ -26,6 +26,10 @@ module WingedCouch
 
       private
 
+      def design_document
+        WingedCouch::Design::Document.from(database)
+      end
+
       def default_query
         WingedCouch::Queries::QueryBuilder.new.
           with_model(self).
@@ -33,7 +37,7 @@ module WingedCouch
       end
 
       def build_view(view_name)
-        view = WingedCouch::Native::View.new(database, view_name)
+        view = Design::View.new(design_document, view_name)
         default_query.
           with_strategy(view.strategy).
           with_path("/_design/winged_couch/_view/#{view_name}")

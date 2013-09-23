@@ -11,7 +11,7 @@ module WingedCouch
       attr_accessor :filepath
 
       # @private
-      STRINGIFY_JS = File.read(File.join(WingedCouch::JAVASCRIPTS_PATH, "stringify_object.js"))
+      STRINGIFY_JS = File.read(File.join(JAVASCRIPTS_PATH, "stringify_object.js"))
 
       # Returns hash with all defined views for specified class
       #
@@ -34,16 +34,18 @@ module WingedCouch
       #
       # @param klass [Class] WingedCouch::Model
       #
-      # @return nil
-      #
       def upload_views_for(klass)
-        current_revision = klass.database.get("/_design/winged_couch")["_rev"] rescue nil
-        data = {
-          _id: "_design/winged_couch",
-          views: fetch(klass)
-        }
-        data.merge!(_rev: current_revision) if current_revision
-        klass.database.put("/_design/winged_couch", data.to_json)
+        database = klass.database
+        database.create unless database.exist?
+
+        design_document = Design::Document.new(database)
+        design_document.save unless design_document.exist?
+
+        fetch(klass).each do |view_name, functions|
+          functions.each do |function_name, function_code|
+            Design::View.create(design_document, view_name, function_name, function_code)
+          end
+        end
       end
 
     end

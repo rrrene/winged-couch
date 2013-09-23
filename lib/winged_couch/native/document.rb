@@ -52,7 +52,7 @@ module WingedCouch
         inspected_data[:_id] = @data[:_id]
         inspected_data[:_rev] = @data[:_rev]
         @data.except(:_rev, :_id).each { |k, v| inspected_data[k] = v }
-        "#<WingedCouch::Native::Document #{inspected_data.map { |k,v| "#{k}=#{v.inspect}" }.join(", ")}>"
+        "#<#{self.class.name} #{inspected_data.map { |k,v| "#{k}=#{v.inspect}" }.join(", ")}>"
       end
 
       alias_method :to_s,   :inspect
@@ -75,6 +75,13 @@ module WingedCouch
         else
           raise Exceptions::DocumentMissing, "Can't update document because it doesn't exist" unless exist?
         end
+      end
+
+      def ==(other)
+        other.is_a?(self.class) &&
+          other.database == self.database &&
+          other._id      == self._id &&
+          other._rev     == self._rev
       end
 
       private

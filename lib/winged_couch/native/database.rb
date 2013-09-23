@@ -1,3 +1,5 @@
+require 'winged_couch/native/databases/http_delegation'
+
 module WingedCouch
 
   module Native
@@ -36,6 +38,8 @@ module WingedCouch
     #
     class Database
 
+      include WingedCouch::Native::Databases::HTTPDelegation
+
       # @private
       RESERVED_DATABASES = ["_users"]
 
@@ -46,7 +50,7 @@ module WingedCouch
         # @return [Array<WingedCouch::Database>]
         #
         def all
-          WingedCouch::HTTP.get("/_all_dbs").map do |db_name|
+          HTTP.get("/_all_dbs").map do |db_name|
             self.new(db_name)
           end
         end
@@ -65,7 +69,7 @@ module WingedCouch
         # @raise [WingedCouch::DatabaseAlreadyExist] if database already exist
         #
         def create(name)
-          WingedCouch::HTTP.put("/#{name}")
+          HTTP.put("/#{name}")
           self.new(name)
         rescue => e
           raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
@@ -95,11 +99,13 @@ module WingedCouch
       # @raise [WingedCouch::NoDatabase] if database doesn't exist
       #
       def drop
-        raise Exceptions::ReservedDatabase.new("Database \"#{self.name}\" is internal, you can't remove it.") if RESERVED_DATABASES.include?(name)
-        WingedCouch::HTTP.delete("/#{name}")
+        if RESERVED_DATABASES.include?(name)
+          raise Exceptions::ReservedDatabase, "Database \"#{self.name}\" is internal, you can't remove it."
+        end
+        HTTP.delete("/#{name}")
         true
-      rescue => e
-        raise Exceptions::NoDatabase.new("Can't drop database \"#{self.name}\" because it doesn't exist.")
+      rescue RestClient::Exception
+        raise Exceptions::NoDatabase, "Can't drop database \"#{self.name}\" because it doesn't exist."
       end
 
       # Returns true if database exist in CouchDB
@@ -107,7 +113,7 @@ module WingedCouch
       # @return [true, false]
       #
       def exist?
-        WingedCouch::HTTP.get("/#{name}")
+        HTTP.get("/#{name}")
         true
       rescue => e
         return false if e.respond_to?(:http_code) && e.http_code == 404
@@ -119,35 +125,7 @@ module WingedCouch
       # Simply delagates it to class
       #
       def create
-        WingedCouch::Native::Database.create(self.name)
-      end
-
-      # Performs get request to database
-      # (simply delegates to WingedCouch::HTTP with `database name` prefix)
-      #
-      def get(url)
-        WingedCouch::HTTP.get("/#{name}#{url}")
-      end
-
-      # Performs post request to database
-      # (simply delegates to WingedCouch::HTTP with `database name` prefix)
-      #
-      def post(url, data)
-        WingedCouch::HTTP.post("/#{name}#{url}", data)
-      end
-
-      # Performs put request to database
-      # (simply delegates to WingedCouch::HTTP with `database name` prefix)
-      #
-      def put(url, data)
-        WingedCouch::HTTP.put("/#{name}#{url}", data)
-      end
-
-      # Performs delete request to database
-      # (simply delegates to WingedCouch::HTTP with `database name` prefix)
-      #
-      def delete(url)
-        WingedCouch::HTTP.delete("/#{name}#{url}")
+        self.class.create(self.name)
       end
 
       # @private
@@ -161,17 +139,19 @@ module WingedCouch
       # Returns WingedCouch design document defined in current database
       #
       def design_document
-        get("/_design/winged_couch")
-      rescue => e
-        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+        Design::Document.from(self)
       end
 
       # Returns all design views defined in WingedCouch design document in current database
       #
       def design_views
-        design_document["views"]
+        design_document.data[:views]
       rescue => e
         raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+      end
+
+      def documents_count
+        get("/")["doc_count"]
       end
 
     end

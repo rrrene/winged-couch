@@ -11,7 +11,7 @@ module WingedCouch
 
       extend self
 
-      delegate :get, :post, :update, :delete, to: WingedCouch::HTTP
+      delegate :get, :post, :update, :delete, to: HTTP
 
       # Returns base information about CouchDB server
       #
