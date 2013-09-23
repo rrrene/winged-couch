@@ -1,6 +1,10 @@
 module WingedCouch
   module Native
     module Databases
+
+      # Module with methods for delegation requests to +WingedCouch::HTTP+
+      #
+      # @see WingedCouch::HTTP
       module HTTPDelegation
 
         # Performs get request to database

@@ -1,4 +1,7 @@
 require 'winged_couch/native/databases/http_delegation'
+require 'winged_couch/native/databases/inspection'
+require 'winged_couch/native/databases/design'
+require 'winged_couch/native/databases/sugar'
 
 module WingedCouch
 
@@ -39,6 +42,9 @@ module WingedCouch
     class Database
 
       include WingedCouch::Native::Databases::HTTPDelegation
+      include WingedCouch::Native::Databases::Inspection
+      include WingedCouch::Native::Databases::Design
+      include WingedCouch::Native::Databases::Sugar
 
       # @private
       RESERVED_DATABASES = ["_users"]
@@ -50,29 +56,7 @@ module WingedCouch
         # @return [Array<WingedCouch::Database>]
         #
         def all
-          HTTP.get("/_all_dbs").map do |db_name|
-            self.new(db_name)
-          end
-        end
-
-        # @private
-        #
-        def each(&block)
-          all.each(&block)
-        end
-
-        # Creates database in CouchDB and returns it
-        #
-        # @param name [String] name of database
-        #
-        # @return [WingedCouch::Database]
-        # @raise [WingedCouch::DatabaseAlreadyExist] if database already exist
-        #
-        def create(name)
-          HTTP.put("/#{name}")
-          self.new(name)
-        rescue => e
-          raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
+          HTTP.get("/_all_dbs").map { |db_name| self.new(db_name) }
         end
 
       end
@@ -81,12 +65,6 @@ module WingedCouch
 
       def initialize(name)
         @name = name
-      end
-
-      # @private
-      #
-      def ==(other)
-        other.is_a?(self.class) && name == other.name
       end
 
       # Drops the database
@@ -125,34 +103,13 @@ module WingedCouch
       # Simply delagates it to class
       #
       def create
-        self.class.create(self.name)
-      end
-
-      # @private
-      def inspect
-        "#<#{self.class.name} name='#{self.name}'>"
-      end
-
-      alias_method :to_s,   :inspect
-      alias_method :to_str, :inspect
-
-      # Returns WingedCouch design document defined in current database
-      #
-      def design_document
-        Design::Document.from(self)
-      end
-
-      # Returns all design views defined in WingedCouch design document in current database
-      #
-      def design_views
-        design_document.data[:views]
+        HTTP.put("/#{name}")
+        self
       rescue => e
-        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+        raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
       end
 
-      def documents_count
-        get("/")["doc_count"]
-      end
+      
 
     end
 
