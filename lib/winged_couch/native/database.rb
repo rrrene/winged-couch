@@ -10,41 +10,31 @@ module WingedCouch
     # Class for managing databases in CouchDB
     #
     # @example Usage:
-    #   db = WingedCouch::Database.create("db_name")
+    #   db = WingedCouch::Database.new("db_name")
     #   # => #<WingedCouch::Database name="db_name">
     #
-    #   db2 = WingedCouch::Database.create("db_name")
+    #   db.exist?
+    #   # => false
+    #
+    #   db.create
+    #   db.exist?
+    #   # => true
+    #
+    #   db.create
     #   # => DatabaseAlreadyExist error
     #
     #   db.drop
     #   # => true
     #
-    #   db2.create
-    #   # => true
-    #
-    #   WingedCouch::Database.new("non_existing_database").exist?
-    #   # => false
-    #
     #   db.exist?
-    #   # => true
-    #
-    #   db2.exist?
-    #   # => true
-    #
-    # WingedCouch::Database has interface for delegating
-    # requests to WingedCouch::HTTP with /db_name prefix
-    #
-    # @example Delegation:
-    #   WingedCouch::Database.new("my_existing_db").get("/record_id")
-    #   # making get request to "http://couch-db-url:port/my_existing_db/record_id"
-    #   # => { "some" => "response" }
+    #   # => false
     #
     class Database
 
-      include WingedCouch::Native::Databases::HTTPDelegation
-      include WingedCouch::Native::Databases::Inspection
-      include WingedCouch::Native::Databases::Design
-      include WingedCouch::Native::Databases::Sugar
+      include Databases::HTTPDelegation
+      include Databases::Inspection
+      include Databases::Design
+      include Databases::Sugar
 
       # @private
       RESERVED_DATABASES = ["_users"]
@@ -77,9 +67,7 @@ module WingedCouch
       # @raise [WingedCouch::NoDatabase] if database doesn't exist
       #
       def drop
-        if RESERVED_DATABASES.include?(name)
-          raise Exceptions::ReservedDatabase, "Database \"#{self.name}\" is internal, you can't remove it."
-        end
+        check_database_name(name)
         HTTP.delete("/#{name}")
         true
       rescue RestClient::Exception
@@ -109,7 +97,13 @@ module WingedCouch
         raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
       end
 
-      
+      private
+
+      def check_database_name(name)
+        if RESERVED_DATABASES.include?(name)
+          raise Exceptions::ReservedDatabase, "Database \"#{self.name}\" is internal, you can't remove it."
+        end
+      end      
 
     end
 
