@@ -186,6 +186,22 @@ module WingedCouch
         end
       end
 
+      describe ".find" do
+        context "when document exist" do
+          before { document.save }
+
+          it "finds the document in the database" do
+            Document.find(database, document._id).should eq(document)
+          end
+        end
+
+        context  "when document doesn't exist" do
+          it "returns nil" do
+            Document.find(database, "missing-id").should be_nil
+          end
+        end
+      end
+
     end
 
   end

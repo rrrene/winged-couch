@@ -1,10 +1,18 @@
 require 'active_support/core_ext/hash'
 require 'active_support/ordered_hash'
 
+require 'winged_couch/native/documents/inspection'
+require 'winged_couch/native/documents/accessors'
+require 'winged_couch/native/documents/comparison'
+
 module WingedCouch
   module Native
 
     class Document
+
+      include Documents::Inspection
+      include Documents::Accessors
+      include Documents::Comparison
 
       attr_accessor :database
       attr_accessor :data
@@ -15,14 +23,6 @@ module WingedCouch
         @data[:_rev] ||= revision
       end
 
-      def _id
-        @data[:_id]
-      end
-
-      def _rev
-        @data[:_rev]
-      end
-
       def exist?
         !!get rescue false
       end
@@ -31,12 +31,8 @@ module WingedCouch
         database.get(url) rescue nil
       end
 
-      def revision
-        get["_rev"] rescue nil
-      end
-
       def save
-        response = database.put(url, save_data)
+        response = database.put(url, data_to_save)
         @data[:_rev] = response["rev"]
         self
       end
@@ -45,18 +41,6 @@ module WingedCouch
         @data = get.with_indifferent_access
         self
       end
-
-      def inspect
-        inspected_data = ActiveSupport::OrderedHash.new
-        inspected_data[:database] = database.name
-        inspected_data[:_id] = @data[:_id]
-        inspected_data[:_rev] = @data[:_rev]
-        @data.except(:_rev, :_id).each { |k, v| inspected_data[k] = v }
-        "#<#{self.class.name} #{inspected_data.map { |k,v| "#{k}=#{v.inspect}" }.join(", ")}>"
-      end
-
-      alias_method :to_s,   :inspect
-      alias_method :to_str, :inspect
 
       def delete
         if exist?
@@ -73,15 +57,17 @@ module WingedCouch
           @data.merge!(data)
           save
         else
-          raise Exceptions::DocumentMissing, "Can't update document because it doesn't exist" unless exist?
+          raise Exceptions::DocumentMissing, "Can't update document because it doesn't exist"
         end
       end
 
-      def ==(other)
-        other.is_a?(self.class) &&
-          other.database == self.database &&
-          other._id      == self._id &&
-          other._rev     == self._rev
+      def self.find(database, document_id)
+        begin
+          data = database.get("/#{document_id}")
+          self.new(database, data)
+        rescue RestClient::ResourceNotFound
+          nil
+        end
       end
 
       private
@@ -94,7 +80,7 @@ module WingedCouch
         end
       end
 
-      def save_data
+      def data_to_save
         @data.except(:_rev).to_json
       end
 
