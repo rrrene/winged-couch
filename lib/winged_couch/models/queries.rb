@@ -27,7 +27,7 @@ module WingedCouch
       private
 
       def design_document
-        WingedCouch::Design::Document.from(database)
+        Design::Document.from(database)
       end
 
       def default_query

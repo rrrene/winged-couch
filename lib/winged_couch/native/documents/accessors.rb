@@ -15,6 +15,14 @@ module WingedCouch
           get["_rev"] rescue nil
         end
 
+        def _id=(new_id)
+          @data[:_id] = new_id
+        end
+
+        def _rev=(new_rev)
+          @data[:_rev] = new_rev
+        end
+
       end
     end
   end

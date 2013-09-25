@@ -2,84 +2,97 @@ require 'spec_helper'
 
 describe WingedCouch::Models::Persistence do
 
-  let(:new_record) do
-    s = OneFieldModel.new
-    s.field = "value"
-    s
-  end
+  # class OneFieldModel < WingedCouch::Model
+  #   attribute :field, String
+  # end
 
-  around(:each) do |e|
-    OneFieldModel.database.create
-    e.run
-    OneFieldModel.database.drop
+
+  subject(:record) { OneFieldModel.new(field: "value") }
+  let(:database) { OneFieldModel.database }
+
+  around(:each) do |example|
+    begin
+      database.create
+      example.run
+    ensure
+      database.drop
+    end
   end
 
   it ".database" do
-    OneFieldModel.database.should be_instance_of WingedCouch::Native::Database
-    OneFieldModel.database.exist?.should be_true
+    database.should be_a(WingedCouch::Native::Database)
+    database.exist?.should be_true
   end
 
   describe "#save" do
 
+    before { record.save }
+
     it "should save object in db" do
-      new_record.save.should eq true
+      database.get("/" + record._id).should be_a(Hash)
     end
 
     it "should update record in db" do
-      new_record.save
-      old_rev_ids = OneFieldModel.rev_ids
-      new_record.save
-      OneFieldModel.rev_ids.should_not eq old_rev_ids
-    end
-
-    it "should fetch ids of all records" do
-      new_record.save
-      OneFieldModel.record_ids.count.should eq 1
+      expect { record.save }.to change { record._rev }
     end
 
     it "should mark object as persisted" do
-      new_record.save
-      new_record.should be_persisted
+      record.should be_persisted
     end
 
     context "when object was not saved" do
+      # break the object
+      before(:each) { record.native_document.data[:_rev] = "123" }
 
-      before(:each) do
-        new_record.save
-        new_record._rev = "123"
-      end
-
-      it "should return false" do
-        new_record.save.should be_false
-      end
-
-      context "#errors" do
-        it "should return reason if object was not saved" do
-          new_record.save
-          new_record.errors.first.should start_with "400"
-        end
+      it "raises an error" do
+        expect { record.save }.to raise_error
       end
     end
 
   end
 
   describe "#delete" do
+    context "when object exist" do
+      before { record.save; record.delete }
 
-    before(:each) do
-      new_record.save
+      it "removes record from db" do
+        expect { database.get("/" + record._id) }.to raise_error
+      end
     end
 
-    it "removes record from db" do
-      new_record.delete.should be_true
-      OneFieldModel.record_ids.should eq []
+    context "when object doesn't exist" do
+      before { record.native_document.data.merge!(_id: "id") }
+
+      it "raises error" do
+        expect { record.delete }.to raise_error
+      end
     end
 
-    it "returns false if object wasn't removed" do
-      new_record._rev = "123"
-      new_record.delete.should be_false
-      new_record.errors.first.should start_with "400"
+  end
+
+  describe "#update" do
+    before { record.save }
+
+    context "when record exist" do
+      before { record.update(field: "value2") }
+
+      it "updates record" do
+        record.field.should eq("value2")
+      end
+
+      it "updates document" do
+        database.get("/" + record._id)["field"].should eq("value2")
+      end
     end
 
+    context "when record doesn't exist" do
+      # break the object
+      before(:each) { record.native_document.data[:_rev] = "123" }
+
+      it "raises an error" do
+        expect { record.update(field: "value2") }.to raise_error
+      end
+    end
   end
 
 end
