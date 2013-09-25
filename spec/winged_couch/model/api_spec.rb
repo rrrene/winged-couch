@@ -2,26 +2,29 @@ require 'spec_helper'
 
 describe WingedCouch::Models::API do
 
+  let(:database) { OneFieldModel.database }
+  let(:record) { OneFieldModel.new(field: "value") }
+
   around(:each) do |example|
     begin
-      OneFieldModel.database.create
+      database.create
       example.run
     ensure
-      OneFieldModel.database.drop
+      database.drop
     end
   end
 
   it "#new" do
-    OneFieldModel.new(field: "value").field.should eq "value"
+    record.field.should eq "value"
   end
 
   it ".create" do
     record_id = OneFieldModel.create(field: "value")._id
-    OneFieldModel.record_ids.should eq [record_id]
+    database.get("/" + record_id).should be_a(Hash)
   end
 
   it "#inspect" do
-    OneFieldModel.new(field: "value").inspect.should eq "#<OneFieldModel field: \"value\", _id: nil, _rev: nil>"
+    record.inspect.should eq "#<OneFieldModel field: \"value\", _id: nil, _rev: nil>"
   end
 
   it ".find" do

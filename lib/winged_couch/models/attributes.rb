@@ -20,6 +20,7 @@ module WingedCouch
         #
         def inherited(klass)
           klass._attributes += _attributes
+          super
         end
 
         # Returns attribute names
@@ -27,7 +28,7 @@ module WingedCouch
         # @return [Array]
         #
         def attribute_names
-          @attribute_names ||= []
+          _attributes.map(&:first)
         end
 
         # Method for defining attribute
@@ -37,13 +38,9 @@ module WingedCouch
         # @param options [Hash]
         # @option options [Object] :default default value of attribute
         #
-        # @return [nil]
-        #
         def attribute(attr_name, attr_klass, options = {})
           self._attributes << [attr_name, attr_klass, options]
-          self.attribute_names << attr_name
           define_attribute(attr_name, attr_klass, options)
-          nil
         end
 
         protected
@@ -55,17 +52,19 @@ module WingedCouch
         attr_writer :_attributes
 
         def define_attribute(attr_name, attr_klass, options)
-          attr_accessor "raw_#{attr_name}"
-
           define_method attr_name do
-            send("raw_#{attr_name}") || options[:default]
+            native_document.data[attr_name] || options[:default]
           end
 
           define_method "#{attr_name}=" do |value|
-            send "raw_#{attr_name}=", type_cast_to_instance_of_klass(value, attr_klass)
+            native_document.data[attr_name] = type_cast_to_instance_of_klass(value, attr_klass)
           end
         end
 
+      end
+
+      def native_document
+        @native_document ||= Native::Document.new(self.class.database)
       end
 
       # Returns hash of attributes in format { key: value }
@@ -86,14 +85,11 @@ module WingedCouch
         elsif klass == Symbol
           value.to_sym
         else
-          raise WingedCouch::UnsupportedType, "Unsupported class #{klass} used for type-casting attribute in model #{self.class.name}"
+          raise Exceptions::UnsupportedType, "Unsupported class #{klass} used for type-casting attribute in model #{self.class.name}"
         end
       end
 
     end
   end
 
-  # @private
-  #
-  class UnsupportedType < ::StandardError; end
 end
