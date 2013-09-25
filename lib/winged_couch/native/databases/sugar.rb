@@ -33,12 +33,16 @@ module WingedCouch
           end
         end
 
+        def info
+          get("/")
+        end
+
         # Returns count of documents in the database.
         #
         # @return [Fixnum]
         #
         def documents_count
-          get("/")["doc_count"]
+          info["doc_count"]
         end
 
         # @private
