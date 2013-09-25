@@ -21,12 +21,7 @@ module WingedCouch
       #
       def fetch(klass)
         js_klass = "#{klass.name}Views"
-        sourcecode = File.read(filepath)
-        context = V8::Context.new do |v8|
-          v8.eval(sourcecode)
-          v8.eval(STRINGIFY_JS)
-        end
-        json = context.eval("JSON.stringify(stringifyObject(#{js_klass}))")
+        json = v8_context.eval("JSON.stringify(stringifyObject(#{js_klass}))")
         JSON.parse(json)
       end
 
@@ -46,6 +41,19 @@ module WingedCouch
             Design::View.create(design_document, view_name, function_name, function_code)
           end
         end
+      end
+
+      private
+
+      def v8_context
+        @context ||= V8::Context.new do |v8|
+          v8.eval(File.read(filepath))
+          v8.eval(STRINGIFY_JS)
+        end
+      end
+
+      def reset_v8_context
+        @context = nil
       end
 
     end
