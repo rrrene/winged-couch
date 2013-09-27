@@ -13,10 +13,6 @@ module WingedCouch
 
   # @private
   class Engine < ::Rails::Engine
-
-    rake_tasks do
-      load "tasks/winged_couch.rake"
-    end
   end if defined? Rails
 
   module Native

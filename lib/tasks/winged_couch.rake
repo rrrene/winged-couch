@@ -1,31 +1,25 @@
 namespace :winged_couch do
-  desc "upload receiver.html to couchdb"
-  task :upload_receiver_html => :environment do
+  namespace :db do
+    desc "Creates databases for defined models"
+    task :create => :environment do
+      dir = ENV["COUCH_MODELS_DIR"] || Rails.root.join("app", "models")
+      dir = dir.to_s.strip
 
-    design_doc = "/_design/winged-couch"
+      if Dir.exists?(dir)
+        pattern = File.join(dir, "**", "*.rb")
+        Dir[pattern].each { |f| require f }
 
-    database = WingedCouch::Native::Database.new("winged-couch")
-    database.create unless database.exist?
-
-    begin
-      rev = database.get(design_doc)["_rev"]
-      database.delete("#{design_doc}?rev=#{rev}")
-    rescue
-      nil
+        WingedCouch::Model.subclasses.each do |klass|
+          if klass.database.exist?
+            puts "Database for model #{klass.name} aleady exist"
+          else
+            klass.database.create
+            puts "Created database for model #{klass.name}"
+          end
+        end
+      else
+        raise "Directory \"#{dir}=\" doesn't exist!"
+      end
     end
-
-    receiver_html = File.read(File.expand_path("../receiver.html", __FILE__))
-
-    data = {
-      _attachments: {
-        "receiver.html" => {
-          content_type: "text/html",
-          data: Base64.encode64(receiver_html)
-        }
-      }
-    }.to_json
-
-    database.put(design_doc, data)
-
-  end
+  end 
 end
