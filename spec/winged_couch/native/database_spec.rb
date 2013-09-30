@@ -119,7 +119,14 @@ module WingedCouch
         let(:database) { Database.new("db_name") }
         let(:design_document) { Document.new(database, _id: "_design/winged_couch") }
         
-        before { database.create }
+        around(:each) do |example|
+          begin
+            database.create
+            example.run
+          ensure
+            database.drop
+          end
+        end
 
         context "#design_document" do
           context "when design document exist" do

@@ -6,7 +6,13 @@ describe WingedCouch::HTTP, :couch do
   let(:test_db_url) { "/test_db" }
   let(:test_data) { { :asd => "qwe" }.to_json }
 
-  after(:each) { http.delete(test_db_url) rescue nil }
+  around(:each) do |example|
+    begin
+      example.run
+    ensure
+      http.delete(test_db_url) rescue nil
+    end
+  end
 
   context "returning value" do
     it ".get" do
