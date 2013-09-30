@@ -8,6 +8,8 @@ require 'winged_couch/native/documents/comparison'
 module WingedCouch
   module Native
 
+    # Low-level class for working with documents
+    #
     class Document
 
       include Documents::Inspection
@@ -23,25 +25,39 @@ module WingedCouch
         @data[:_rev] ||= revision
       end
 
+      # Returns true if document exist
+      #
+      # @return [true, false]
+      #
       def exist?
         !!get rescue false
       end
 
-      def get
-        database.get(url) rescue nil
-      end
-
+      # Saves document in the database
+      #
+      # @return [WingedCouch::Native::Document] saved document with new revision
+      #
       def save
         response = database.put(url, data_to_save)
         @data[:_rev] = response["rev"]
         self
       end
 
+      # Reloads document with latest data from database
+      #
+      # @return [WingedCouch::Native::Document] reloaded document with latest data
+      #
       def reload
         @data = get.with_indifferent_access
         self
       end
 
+      # Removed document from the database
+      #
+      # @return true
+      #
+      # @raise [WingedCouch::Exceptions::DocumentMissing] if document doesn't exits
+      #
       def delete
         if exist?
           database.delete(url)
@@ -52,6 +68,12 @@ module WingedCouch
         end
       end
 
+      # Updates document with passed data
+      #
+      # @return [WingedCouch::Native::Document] updated document with latest data and revision
+      #
+      # @raise [WingedCouch::Exceptions::DocumentMissing] if document doesn't exist
+      #
       def update(data = {})
         if exist?
           @data.merge!(data)
@@ -61,6 +83,13 @@ module WingedCouch
         end
       end
 
+      # Finds document in the database by id
+      #
+      # @param database [WingedCouch::Database::Database]
+      # @param document_id [String]
+      #
+      # @return [WingedCouch::Native::Document]
+      #
       def self.find(database, document_id)
         begin
           data = database.get("/#{document_id}")
@@ -72,6 +101,17 @@ module WingedCouch
 
       private
 
+      # Fetches raw data from database
+      #
+      # @return [Hash]
+      #
+      def get
+        database.get(url) rescue nil
+      end
+
+      # Generated url for current document
+      #
+      # @return [String]
       def url(with_revision = _rev)
         if with_revision
           "/#{_id}?rev=#{_rev}"
@@ -80,6 +120,10 @@ module WingedCouch
         end
       end
 
+      # Returns data that need to be saved
+      #
+      # @return [String] json representation
+      #
       def data_to_save
         @data.except(:_rev).to_json
       end
