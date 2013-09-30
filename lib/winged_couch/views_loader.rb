@@ -21,8 +21,13 @@ module WingedCouch
       #
       def fetch(klass)
         js_klass = "#{klass.name}Views"
-        json = v8_context.eval("JSON.stringify(stringifyObject(#{js_klass}))")
-        JSON.parse(json)
+        begin
+          json = v8_context.eval("JSON.stringify(stringifyObject(#{js_klass}))")
+          JSON.parse(json)
+        rescue => e
+          raise Exceptions::ViewsMissing if e.message == "#{js_klass} is not defined"
+          raise e
+        end
       end
 
       # Uploads views for specified class to CouchDB

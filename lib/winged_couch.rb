@@ -38,3 +38,11 @@ end
 
 require 'rest-client'
 require "winged_couch/version"
+
+if defined? Rails
+  require 'winged_couch/rails'
+
+  ActiveSupport.on_load(:action_view) do
+    ActionView::Base.send(:include, WingedCouch::Rails::ViewHelpers)
+  end
+end

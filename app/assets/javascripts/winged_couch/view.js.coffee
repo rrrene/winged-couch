@@ -1,31 +1,29 @@
 class WingedCouch.View
-  constructor: (@name, @model) ->
+  constructor: (@model, @name) ->
     @params = {}
-    @database = @model.database()
 
-  addParam: (key, value) ->
+  with: (key, value) ->
     @params[key] = value
 
-  http_method: ->
-    @params.http_method || "get"
+  path: ->
+    "/#{@model.dbName}/_design/winged_couch/_view/#{@name}"
 
-  couchdb_call: (uri, callback) ->
-    @database[@http_method()](uri, callback)
+  perform: (options = {}) ->
+    deferred = $.Deferred()
+    WingedCouch.Server.
+      get(@path(), @params).
+      done(@callback deferred).
+      fail(@errback deferred)
 
-  uri: ->
-    "_design/winged_couch/_view/#{@name}"
+    deferred
 
-  perform: (options, callback) ->
-    callback = options unless callback
-    throw("No callback passed") unless typeof(callback) == "function"
-    @couchdb_call @uri(), (data) =>
-      if options.raw
-        callback(data)
-      else
-        callback(@transformed(data))
+  callback: (deferred) ->
+    model = @model
+    (data) ->
+      result = data.rows.map (attrs) =>
+        model.from(attrs.value)
+      deferred.resolve(result)
 
-  transformed: (data) ->
-    result = []
-    for attrs in data.rows
-      result.push(@model.from(attrs.value))
-    result
+  errback: (deferred) ->
+    ->
+      deferred.reject()

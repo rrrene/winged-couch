@@ -1,30 +1,38 @@
+window.WingedCouch or= {}
+
 class WingedCouch.Model
   constructor: (data) ->
     for k, v of data
       @[k] = v
 
-  @database: () ->
-    new Couch.Database(WingedCouch.server, @db_name);
-
   @from: (data) ->
-    new this(data)
+    new @(data)
 
-  @find: (_id, callback) ->
-    throw("No callback passed") unless callback
-    @database().get _id, (data) =>
-      callback(@.from(data))
+  @find: (id) ->
+    deferred = $.Deferred()
 
-  @build: (data) ->
-    throw "Only 'view' type is supported yet." unless data.view
-    new WingedCouch.View(data.view, this)
+    WingedCouch.Server.
+      get("/#{@dbName}/#{id}").
+      done(@findCallback deferred).
+      fail(@findErrback deferred)
 
-# Defined models
-#
-<% WingedCouch::Model.subclasses.each do |klass| %>
-class @<%= klass.name %> extends WingedCouch.Model
+    deferred
 
-  @db_name = "<%= klass.name.downcase %>"
+  @build: (modelName, dbName) ->
+    model = class extends WingedCouch.Model
+    model.dbName = dbName
+    window[modelName] = model
+    <%= "console.log('Created model', modelName)" if Rails.env.development? %>
+    true
 
-  constructor: (data) ->
-    super
-<% end %>
+  @findCallback: (deferred) ->
+    (data) =>
+      record = @from(data)
+      deferred.resolve(record)
+
+  @findErrback: (deferred) ->
+    ->
+      deferred.reject()
+
+  @view: (view_name) ->
+    new WingedCouch.View(this, view_name)
