@@ -28,7 +28,7 @@ module WingedCouch
         if options[:raw]
           @result
         else
-          process_strategy[@result, @model] rescue @result
+          process_strategy.call(@result, @model) rescue @result
         end
       end
 

@@ -6,6 +6,7 @@ module WingedCouch
 
       around(:each) do |example|
         Database.each { |db| db.drop rescue nil }
+        example.run
       end
 
       context ".all" do
@@ -137,14 +138,21 @@ module WingedCouch
         end
 
         context "#design_views" do
-          context "when design document exist" do
+          context "when design document doesn't exist" do
             it "raises exception" do
               expect { database.design_views }.to raise_error(Exceptions::NoDesignDocument)
             end
           end
 
-          context "when design document doesn't exist" do
-            it "should return design view" # TODO: implement
+          context "when design document exist" do
+            before do
+              design_document.save
+              Design::View.create(design_document, "all", "map", "function(doc) { emit(doc); }")
+            end
+
+            it "should return design view" do
+              database.design_views.should have_key("all")
+            end
           end
         end
 

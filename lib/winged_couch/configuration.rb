@@ -29,7 +29,7 @@ module WingedCouch
 
     attr_writer :host
     attr_writer :port
-    attr_writer :logger
+    attr_accessor :logger
 
     # Returns CouchDB host
     #
@@ -54,12 +54,6 @@ module WingedCouch
     #
     def url
       "#{host}:#{port}"
-    end
-
-    # Returns WingedCouch logger
-    #
-    def logger
-      @logger ||= Logger.new(STDOUT)
     end
 
     # @private

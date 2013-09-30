@@ -2,7 +2,7 @@ class SimpleModel < WingedCouch::Model
   attribute :name, String
   attribute :gender, Symbol, default: "male"
   attribute :number, Fixnum
-  attribute :unsupported, Object
+  attribute :unsupported, Class
 end
 
 class BlankModel < WingedCouch::Model

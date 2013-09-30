@@ -38,7 +38,7 @@ module WingedCouch
         raise ArgumentError, "Unknown parameter type #{type}" unless PROCESSORS.has_key?(type)
         processor = PROCESSORS[type]
         define_method name do |value|
-          with_param(name, processor[value])
+          with_param name, processor.call(value)
         end
       end
 

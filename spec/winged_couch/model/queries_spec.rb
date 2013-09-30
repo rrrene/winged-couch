@@ -1,16 +1,18 @@
 require 'spec_helper'
 
 describe WingedCouch::Models::Queries do
+
+  let(:database) { ModelWithDesignDoc.database }
   around(:each) do |example|
     begin
-      ModelWithDesignDoc.database.create
+      database.create
       upload_views(ModelWithDesignDoc)
       ModelWithDesignDoc.create(type: "string", name: "Ilya")
       3.times { ModelWithDesignDoc.create(type: "string", name: "Vasya") }
       ModelWithDesignDoc.create(type: "fixnum")
       example.run
     ensure
-      ModelWithDesignDoc.database.drop
+      database.drop
     end
   end
 
@@ -47,6 +49,7 @@ describe WingedCouch::Models::Queries do
 
   describe "utilities" do
     let(:query) { ModelWithDesignDoc.build(view: "by_name") }
+    let(:reduce_query) { ModelWithDesignDoc.build(view: "key_objects") }
 
     it ".descending" do
       asc  = query.descending(true).perform
@@ -63,18 +66,41 @@ describe WingedCouch::Models::Queries do
       query.endkey(first_record.name).endkey_docid(first_record._id).perform.should eq([first_record])
     end
 
-    it ".group"
-    it ".group_level"
-    it ".include_docs"
-    it ".inclusive_end"
+    it ".include_docs" do
+      result = query.include_docs(true).perform(raw: true)
+      result["rows"].first["doc"].should be_a(Hash)
+    end
+
+    it ".inclusive_end" do
+      all   = query.endkey("Vasya").inclusive_end(true).perform
+      first = query.endkey("Vasya").inclusive_end(false).perform
+      expect { all.count > first.count }.to be_true
+    end
 
     it ".key" do
       query.key("Ilya").perform.count.should eq(1)
     end
 
-    it ".limit"
-    it ".reduce"
-    it ".skip"
+    it ".limit" do
+      query.limit(2).perform.count.should eq(2)
+    end
+
+    describe ".reduce" do
+      it "uses reduce function when reduce(true) called" do
+        rows = reduce_query.reduce(true).perform(raw: true)["rows"]
+        rows.length.should eq(1)
+        rows.first["value"].should eq(reduce_query.reduce(true).perform)
+      end
+
+      it "doesn't use reduce function when reduce(false) called, uses only map function" do
+        rows = reduce_query.reduce(false).perform(raw: true)["rows"]
+        rows.length.should_not eq(1)
+      end
+    end
+
+    it ".skip" do
+      query.perform.count.should eq(query.skip(1).perform.count + 1)
+    end
 
     it ".stale" do
       query.stale(:ok).perform.should be_a(Array)
@@ -89,7 +115,9 @@ describe WingedCouch::Models::Queries do
       query.startkey(last_record.name).startkey_docid(last_record._id).perform.should eq([last_record])
     end
 
-    it ".update_seq"
+    it ".update_seq" do
+      query.update_seq(true).perform(raw: true).should have_key("update_seq")
+    end
 
   end
 end

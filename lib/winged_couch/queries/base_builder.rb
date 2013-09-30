@@ -36,6 +36,10 @@ module WingedCouch
         database.send(http_method, *query)
       end
 
+      def reset
+        @params = {}
+      end
+
       private
 
       def attributes

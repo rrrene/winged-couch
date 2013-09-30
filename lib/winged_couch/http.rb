@@ -102,6 +102,7 @@ module WingedCouch
         url = args.shift
         url = [host, url].join if host
         response = JSON.parse RestClient.send(request_type, url, *args)
+        WingedCouch.logger.info "#{request_type.upcase} #{url} #{args.inspect}" if WingedCouch.logger
         block.call(response) if block
         response
       end

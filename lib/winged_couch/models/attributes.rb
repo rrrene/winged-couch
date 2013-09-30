@@ -84,6 +84,8 @@ module WingedCouch
           value.to_i
         elsif klass == Symbol
           value.to_sym
+        elsif klass == Object
+          value
         else
           raise Exceptions::UnsupportedType, "Unsupported class #{klass} used for type-casting attribute in model #{self.class.name}"
         end

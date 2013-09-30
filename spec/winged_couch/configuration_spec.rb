@@ -65,8 +65,4 @@ describe WingedCouch::Configuration do
     WingedCouch.stub(:url => "url")
     WingedCouch.inspect.should eq "#<WingedCouch connected to url>"
   end
-
-  it ".logger" do
-    WingedCouch.logger.should be_a Logger
-  end
 end

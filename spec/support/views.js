@@ -29,7 +29,7 @@ var ModelWithDesignDocViews = {
   },
   "key_objects": {
     "map": function(doc) {
-      emit(doc.name.length);
+      emit(doc, doc.name.length);
     },
     "reduce": function(key, values) {
       return sum(values);
