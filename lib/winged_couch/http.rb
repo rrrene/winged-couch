@@ -8,6 +8,11 @@ module WingedCouch
     class << self
 
       attr_accessor :host
+      attr_writer :count
+
+      def count
+        @count ||= Hash.new(0)
+      end
 
       def host
         @host ||= WingedCouch.url
@@ -102,7 +107,8 @@ module WingedCouch
         url = args.shift
         url = [host, url].join if host
         response = JSON.parse RestClient.send(request_type, url, *args)
-        WingedCouch.logger.info "#{request_type.upcase} #{url} #{args.inspect}" if WingedCouch.logger
+        WingedCouch.logger.info "#{request_type.upcase} #{url}" if WingedCouch.logger
+        self.count["#{request_type.upcase} #{url}"] += 1
         block.call(response) if block
         response
       end

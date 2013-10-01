@@ -7,6 +7,7 @@ module WingedCouch
       around(:each) do |example|
         Database.each { |db| db.drop rescue nil }
         example.run
+        Database.each { |db| db.drop rescue nil }
       end
 
       context ".all" do

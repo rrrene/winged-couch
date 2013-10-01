@@ -38,7 +38,7 @@ module WingedCouch
         database = klass.database
         database.create unless database.exist?
 
-        design_document = Design::Document.new(database)
+        design_document = Design::Document.new(database, {}, true)
         design_document.save unless design_document.exist?
 
         fetch(klass).each do |view_name, functions|

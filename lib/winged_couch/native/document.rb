@@ -19,10 +19,10 @@ module WingedCouch
       attr_accessor :database
       attr_accessor :data
 
-      def initialize(database, data = {})
+      def initialize(database, data = {}, retrieve_revision = false)
         @database = database
         @data = data.with_indifferent_access
-        @data[:_rev] ||= revision
+        @data[:_rev] ||= revision if retrieve_revision
       end
 
       # Returns true if document exist

@@ -28,7 +28,7 @@ module WingedCouch
         end
 
         describe "retrieving revision" do
-          let(:retrieved_document) { Document.new(database, data) }
+          let(:retrieved_document) { Document.new(database, data, true) }
 
           context "when document exist in database" do
             before { document.save }
