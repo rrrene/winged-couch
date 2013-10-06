@@ -1,5 +1,7 @@
 module WingedCouch
   module Tools
+
+    # @private
     module Base
 
       extend self

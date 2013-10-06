@@ -1,6 +1,7 @@
 module WingedCouch
   module Native
     module Documents
+      # @private
       module Accessors
 
         def _id

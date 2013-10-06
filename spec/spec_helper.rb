@@ -1,7 +1,12 @@
-require 'simplecov'
-SimpleCov.start do
-  add_filter "/spec/"
-  add_filter "/templates/"
+if ENV["TRAVIS"]
+  require 'coveralls'
+  Coveralls.wear!
+else
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter "/spec/"
+    add_filter "/templates/"
+  end
 end
 
 require 'winged_couch'

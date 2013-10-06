@@ -33,6 +33,8 @@ module WingedCouch
           end
         end
 
+        # Returns information about the database
+        #
         def info
           get("/")
         end

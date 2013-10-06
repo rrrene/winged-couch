@@ -1,6 +1,9 @@
 # CouchOrm
 
 [![Build Status](https://travis-ci.org/iliabylich/winged-couch.png?branch=master)](https://travis-ci.org/iliabylich/winged-couch)
+[![Code Climate](https://codeclimate.com/github/iliabylich/winged-couch.png)](https://codeclimate.com/github/iliabylich/winged-couch)
+[![Coverage Status](https://coveralls.io/repos/iliabylich/winged-couch/badge.png)](https://coveralls.io/r/iliabylich/winged-couch)
+[![Dependency Status](https://gemnasium.com/iliabylich/winged-couch.png)](https://gemnasium.com/iliabylich/winged-couch)
 
 ## Usage
 

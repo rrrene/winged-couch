@@ -9,7 +9,7 @@ module WingedCouch
         # Returns WingedCouch design document defined in current database
         #
         def design_document
-          ::WingedCouch::Design::Document.from(self)
+          @design_document ||= ::WingedCouch::Design::Document.from(self)
         end
 
         # Returns all design views defined in WingedCouch design document in current database

@@ -45,8 +45,17 @@ module WingedCouch
         #
         # @return [Array<WingedCouch::Database>]
         #
+        # @example
+        #   WingedCouch::Native::Database.all
+        #   # => [#<WingedCouch::Native::Database name='_users'>]
+        #
         def all
-          HTTP.get("/_all_dbs").map { |db_name| self.new(db_name) }
+          @all ||= HTTP.get("/_all_dbs").map { |db_name| self.new(db_name) }
+        end
+
+        # @private
+        def reset_all
+          @all = nil
         end
 
       end
@@ -66,9 +75,22 @@ module WingedCouch
       #
       # @raise [WingedCouch::NoDatabase] if database doesn't exist
       #
+      # @example When database exist:
+      #   db = WingedCouch::Native::Database.create("my_db")
+      #   # => #<WingedCouch::Native::Database name='my_db'>
+      #   db.drop
+      #   # => true
+      #
+      # @example When database doesn't exist:
+      #   db = WingedCouch::Native::Database.new("my_db")
+      #   # => #<WingedCouch::Native::Database name='my_db'>
+      #   db.drop
+      #   # => WingedCouch::Exceptions::NoDatabase: Can't drop database "my_db" because it doesn't exist.
+      #
       def drop
         check_database_name(name)
         HTTP.delete("/#{name}")
+        self.class.reset_all
         true
       rescue RestClient::Exception
         raise Exceptions::NoDatabase, "Can't drop database \"#{self.name}\" because it doesn't exist."
@@ -78,12 +100,13 @@ module WingedCouch
       #
       # @return [true, false]
       #
+      # @example
+      #   db = WingedCouch::Native::Database.new("my_db")
+      #   # => #<WingedCouch::Native::Database name='my_db'>
+      #   db.exist?
+      #   # => false
       def exist?
-        HTTP.get("/#{name}")
-        true
-      rescue => e
-        return false if e.respond_to?(:http_code) && e.http_code == 404
-        raise e
+        self.class.all.any? { |db| db.name == self.name }
       end
 
       # Creates database with name `name`
@@ -92,6 +115,7 @@ module WingedCouch
       #
       def create
         HTTP.put("/#{name}")
+        self.class.reset_all
         self
       rescue => e
         raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")

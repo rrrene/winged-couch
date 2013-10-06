@@ -2,8 +2,9 @@ class WingedCouch.View
   constructor: (@model, @name) ->
     @params = {}
 
-  with: (key, value) ->
+  withParam: (key, value) ->
     @params[key] = value
+    this
 
   path: ->
     "/#{@model.dbName}/_design/winged_couch/_view/#{@name}"

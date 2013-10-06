@@ -1,6 +1,8 @@
 module WingedCouch
   module Native
     module Documents
+
+      # @private
       module Comparison
 
         def ==(other)
