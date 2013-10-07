@@ -33,6 +33,7 @@ module WingedCouch
   module Queries
     autoload :BaseBuilder,  'winged_couch/queries/base_builder'
     autoload :QueryBuilder, 'winged_couch/queries/query_builder'
+    autoload :Result,       'winged_couch/queries/result'
   end
 
   module Tools

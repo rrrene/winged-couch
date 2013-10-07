@@ -1,4 +1,3 @@
-require 'winged_couch/queries/strategies'
 require 'winged_couch/queries/dsl'
 
 module WingedCouch
@@ -8,7 +7,6 @@ module WingedCouch
     #
     class QueryBuilder < BaseBuilder
 
-      include Strategies
       extend DSL
 
       chain_accessor :model
@@ -19,26 +17,17 @@ module WingedCouch
       # @param options [Hash]
       # @option options [Object] :raw (false) returns raw response when true-equivalent passed
       #
-      # @return [Array<WingedCouch::Model>] when raw: false passed
-      # @return [Hash] raw data when raw: true passed
+      # @return [WingedCouch::Quiries::Result>]
       #
       def perform(options = {})
-        @result = super
-
-        if options[:raw]
-          @result
-        else
-          process_strategy.call(@result, @model) rescue @result
-        end
+        @result ||= Result.new(model, strategy, super)
       end
 
       parameter :descending,     :boolean
       parameter :endkey,         :param
       parameter :endkey_docid,   :raw
-      # available only for reduce views
-      parameter :group,          :boolean
-      # available only for reduce views
-      parameter :group_level,    :fixnum
+      parameter :group,          :boolean # available only for reduce views
+      parameter :group_level,    :fixnum  # available only for reduce views
       parameter :include_docs,   :boolean
       parameter :inclusive_end,  :boolean
       parameter :key,            :param
@@ -52,15 +41,10 @@ module WingedCouch
 
       private
 
-      def process_strategy
-        case strategy
-        when "view:map"        then method(:map_strategy)        # see Strategies
-        when "view:map:reduce" then method(:map_reduce_strategy) # see Strategies
-        else
-          raise RuntimeError, "Unknown query strategy #{@strategy}"
-        end
+      def initialize_copy(other)
+        super
+        @result = nil
       end
-
 
     end
 
