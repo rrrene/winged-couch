@@ -35,12 +35,18 @@ module WingedCouch
 
       # Saves document in the database
       #
-      # @return [WingedCouch::Native::Document] saved document with new revision
+      # @return [true, false] result of saving document
       #
       def save
-        response = database.put(url, data_to_save)
-        @data[:_rev] = response["rev"]
-        self
+        begin
+          @errors = []
+          response = database.put(url, data_to_save)
+          @data[:_rev] = response["rev"]
+          true
+        rescue RestClient::Forbidden => e
+          errors << JSON.parse(e.response)["reason"]
+          false
+        end
       end
 
       # Reloads document with latest data from database
@@ -97,6 +103,10 @@ module WingedCouch
         rescue RestClient::ResourceNotFound
           nil
         end
+      end
+
+      def errors
+        @errors ||= []
       end
 
       private

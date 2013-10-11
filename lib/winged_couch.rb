@@ -26,8 +26,9 @@ module WingedCouch
   end
 
   module Design
-    autoload :View,     'winged_couch/design/view'
-    autoload :Document, 'winged_couch/design/document'
+    autoload :View,       'winged_couch/design/view'
+    autoload :Document,   'winged_couch/design/document'
+    autoload :Validation, 'winged_couch/design/validation'
   end
 
   module Queries

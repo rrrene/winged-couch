@@ -2,18 +2,16 @@ require 'spec_helper'
 
 describe WingedCouch::Models::Queries do
 
-  let(:database) { ModelWithDesignDoc.database }
-  around(:each) do |example|
-    begin
-      database.create
-      upload_views(ModelWithDesignDoc)
-      ModelWithDesignDoc.create(type: "string", name: "Ilya")
-      3.times { ModelWithDesignDoc.create(type: "string", name: "Vasya") }
-      ModelWithDesignDoc.create(type: "fixnum")
-      example.run
-    ensure
-      database.drop
-    end
+  before(:all) do
+    ModelWithDesignDoc.database.create
+    upload_views(ModelWithDesignDoc)
+    ModelWithDesignDoc.create(type: "string", name: "Ilya")
+    3.times { ModelWithDesignDoc.create(type: "string", name: "Vasya") }
+    ModelWithDesignDoc.create(type: "fixnum")
+  end
+
+  after(:all) do
+    ModelWithDesignDoc.database.drop
   end
 
   describe "querying map-only views" do
@@ -106,7 +104,7 @@ describe WingedCouch::Models::Queries do
 
     describe ".reduce" do
       it "uses reduce function when reduce(true) called" do
-        rows = reduce_query.reduce(true).perform(raw: true).data["rows"]
+        rows = reduce_query.reduce(true).perform.data["rows"]
         rows.length.should eq(1)
         rows.first["value"].should eq(reduce_query.reduce(true).perform.records)
       end

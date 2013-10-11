@@ -30,7 +30,7 @@ module WingedCouch
         private
 
         def database_name
-          self.name.underscore
+          self.name.demodulize.underscore
         end
 
       end

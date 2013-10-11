@@ -14,12 +14,9 @@ module WingedCouch
 
       # Performs request to CouchDB
       #
-      # @param options [Hash]
-      # @option options [Object] :raw (false) returns raw response when true-equivalent passed
+      # @return [WingedCouch::Queries::Result>]
       #
-      # @return [WingedCouch::Quiries::Result>]
-      #
-      def perform(options = {})
+      def perform
         @result ||= Result.new(model, strategy, super)
       end
 
