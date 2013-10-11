@@ -1,5 +1,6 @@
 require 'active_support/core_ext/hash'
 require 'active_support/ordered_hash'
+require 'active_support/json'
 
 require 'winged_couch/native/documents/inspection'
 require 'winged_couch/native/documents/accessors'
