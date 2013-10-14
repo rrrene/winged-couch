@@ -8,11 +8,6 @@ module WingedCouch
     class << self
 
       attr_accessor :host
-      attr_writer :count
-
-      def count
-        @count ||= Hash.new(0)
-      end
 
       def host
         @host ||= WingedCouch.url
@@ -106,10 +101,15 @@ module WingedCouch
       def perform(request_type, *args, &block)
         url = args.shift
         url = [host, url].join if host
-        response = JSON.parse RestClient.send(request_type, url, *args)
-        WingedCouch.logger.info "#{request_type.upcase} #{url}" if WingedCouch.logger
-        self.count["#{request_type.upcase} #{url}"] += 1
+        response = fetch(request_type, url, args)
         block.call(response) if block
+        response
+      end
+
+      def fetch(request_type, url, args)
+        start = Time.now
+        response = JSON.parse RestClient.send(request_type, url, *args)
+        WingedCouch.logger.info "\e[0;32m#{request_type.upcase} #{url} (#{Time.now - start}) \e[0;0m" if WingedCouch.logger
         response
       end
     end

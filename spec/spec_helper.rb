@@ -24,9 +24,6 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.order = 'random'
   config.include CouchHelper, :couch
-  config.after(:suite) do
-    puts "\n\n#{WingedCouch::HTTP.count.values.inject(:+)} requests to CouchDB"
-  end
 end
 
 

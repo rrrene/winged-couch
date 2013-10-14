@@ -3,6 +3,7 @@ require 'winged_couch/models/persistence'
 require 'winged_couch/models/api'
 require 'winged_couch/models/queries'
 require 'winged_couch/models/validation'
+require 'winged_couch/models/hooks'
 
 module WingedCouch
 
@@ -13,7 +14,8 @@ module WingedCouch
     include ::WingedCouch::Models::Persistence
     include ::WingedCouch::Models::API
     extend  ::WingedCouch::Models::Queries
-    include  ::WingedCouch::Models::Validation
+    include ::WingedCouch::Models::Validation
+    include ::WingedCouch::Models::Hooks
 
     if defined?(ActiveModel) # Rails support
       extend  ActiveModel::Naming

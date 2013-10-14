@@ -35,7 +35,7 @@ module WingedCouch
 
       end
 
-      delegate :_id, :_rev, :_id=, :_rev=, :delete, :update, to: :native_document
+      delegate :_id, :_rev, :_id=, :_rev=, to: :native_document
 
       # Saves object to database or updates it if it was stored before
       #
@@ -45,7 +45,18 @@ module WingedCouch
       #
       def save
         native_document._id ||= SecureRandom.hex
-        native_document.save
+        run_hooks(:before, :save)
+        native_document.save && run_hooks(:after, :save)
+      end
+
+      def delete
+        run_hooks(:before, :delete)
+        native_document.delete && run_hooks(:after, :delete)
+      end
+
+      def update(data)
+        run_hooks(:before, :update)
+        native_document.update(data) && run_hooks(:after, :update)
       end
 
       # Returns true if object is persisted

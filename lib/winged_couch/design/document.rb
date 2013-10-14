@@ -29,7 +29,7 @@ module WingedCouch
       def self.from(database)
         new(database).reload
       rescue => e
-        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+        raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{database.name}\".")
       end
 
     end
