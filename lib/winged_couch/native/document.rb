@@ -20,10 +20,15 @@ module WingedCouch
       attr_accessor :database
       attr_accessor :data
 
+      # delegate :get, :post, :put, :delete, to: :database
+
       def initialize(database, data = {}, retrieve_revision = false)
         @database = database
         @data = data.with_indifferent_access
-        @data[:_rev] ||= revision if retrieve_revision
+        if retrieve_revision
+          self._rev ||= revision
+          @data.delete(:_rev) unless self._rev
+        end
       end
 
       # Returns true if document exist
@@ -31,7 +36,7 @@ module WingedCouch
       # @return [true, false]
       #
       def exist?
-        !!get rescue false
+        !!get
       end
 
       # Saves document in the database
@@ -41,7 +46,7 @@ module WingedCouch
       def save
         begin
           @errors = []
-          response = database.put(url, data_to_save)
+          response = database.put(path, data)
           @data[:_rev] = response["rev"]
           true
         rescue RestClient::Forbidden => e
@@ -67,7 +72,7 @@ module WingedCouch
       #
       def delete
         if exist?
-          database.delete(url)
+          database.delete(path, default_params)
           @data["_rev"] = nil
           true
         else
@@ -99,7 +104,7 @@ module WingedCouch
       #
       def self.find(database, document_id)
         begin
-          data = database.get("/#{document_id}")
+          data = database.get(database.path.join(document_id))
           self.new(database, data)
         rescue RestClient::ResourceNotFound
           nil
@@ -117,26 +122,19 @@ module WingedCouch
       # @return [Hash]
       #
       def get
-        database.get(url) rescue nil
+        database.get(path, default_params) rescue nil
       end
 
-      # Generated url for current document
-      #
-      # @return [String]
-      def url(with_revision = _rev)
-        if with_revision
-          "/#{_id}?rev=#{_rev}"
-        else
-          "/#{_id}"
-        end
+      def base_path
+        database.path
       end
 
-      # Returns data that need to be saved
-      #
-      # @return [String] json representation
-      #
-      def data_to_save
-        @data.except(:_rev).to_json
+      def path
+        base_path.join(_id)
+      end
+
+      def default_params
+        _rev ? { rev: _rev } : {}
       end
 
     end

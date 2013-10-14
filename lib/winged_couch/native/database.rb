@@ -31,7 +31,6 @@ module WingedCouch
     #
     class Database
 
-      include Databases::HTTPDelegation
       include Databases::Inspection
       include Databases::Design
       include Databases::Sugar
@@ -50,7 +49,7 @@ module WingedCouch
         #   # => [#<WingedCouch::Native::Database name='_users'>]
         #
         def all
-          @all ||= HTTP.get("/_all_dbs").map { |db_name| self.new(db_name) }
+          @all ||= Server.all_dbs.map { |db_name| self.new(db_name) }
         end
 
         # @private
@@ -61,6 +60,8 @@ module WingedCouch
       end
 
       attr_accessor :name
+
+      delegate :get, :post, :put, :delete, to: HTTP
 
       def initialize(name)
         @name = name
@@ -89,7 +90,7 @@ module WingedCouch
       #
       def drop
         check_database_name(name)
-        HTTP.delete("/#{name}")
+        HTTP.delete path
         self.class.reset_all
         true
       rescue RestClient::Exception
@@ -114,11 +115,15 @@ module WingedCouch
       # Simply delagates it to class
       #
       def create
-        HTTP.put("/#{name}")
+        HTTP.put path
         self.class.reset_all
         self
       rescue => e
         raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
+      end
+
+      def path
+        HTTP.path.join(name)
       end
 
       private
@@ -127,7 +132,7 @@ module WingedCouch
         if RESERVED_DATABASES.include?(name)
           raise Exceptions::ReservedDatabase, "Database \"#{self.name}\" is internal, you can't remove it."
         end
-      end      
+      end
 
     end
 

@@ -9,8 +9,8 @@ module WingedCouch
 
       attr_accessor :host
 
-      def host
-        @host ||= WingedCouch.url
+      def path
+        HttpPath.new
       end
 
       # Send +GET+ request to specified url
@@ -30,8 +30,8 @@ module WingedCouch
       #   end
       #   # => same output
       #
-      def get(url, &block)
-        perform(:get, url, { content_type: :json }, &block)
+      def get(http_path, params = {})
+        perform(:get, http_path, { params: params, content_type: :json })
       end
 
       # Send +POST+ request to specified url
@@ -51,8 +51,8 @@ module WingedCouch
       #   end
       #   # => same output
       #
-      def post(url, body = "", &block)
-        perform(:post, url, body, { content_type: :json }, &block)
+      def post(http_path, body = {})
+        perform(:post, http_path, body.to_json, { content_type: :json })
       end
 
       # Send +PUT+ request to specified url
@@ -72,8 +72,8 @@ module WingedCouch
       #   end
       #   # => same output
       #
-      def put(url, body = "", &block)
-        perform(:put, url, body, { content_type: :json }, &block)
+      def put(http_path, body = {})
+        perform(:put, http_path, body.to_json, { content_type: :json })
       end
 
       # Send +DELETE+ request to specified url
@@ -92,17 +92,15 @@ module WingedCouch
       #   end
       #   # => same output
       #
-      def delete(url, &block)
-        perform(:delete, url, { content_type: :json }, &block)
+      def delete(http_path, params = {})
+        perform(:delete, http_path, { params: params, content_type: :json })
       end
 
       private
 
-      def perform(request_type, *args, &block)
-        url = args.shift
-        url = [host, url].join if host
+      def perform(request_type, *args)
+        url = args.shift.to_s
         response = fetch(request_type, url, args)
-        block.call(response) if block
         response
       end
 

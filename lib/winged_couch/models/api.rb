@@ -30,7 +30,7 @@ module WingedCouch
         # @return [WingedCouch::Model]
         #
         def find(_id)
-          self.new(database.get("/#{_id}"))
+          self.new(database.get(database.path.join(_id)))
         end
 
         # Returns design views in current database

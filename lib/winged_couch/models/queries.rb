@@ -5,6 +5,15 @@ module WingedCouch
     #
     module Queries
 
+      def has_views(*view_names)
+        view_names.each do |view_name|
+          define_singleton_method view_name do
+            view(view_name)
+          end
+        end
+      end
+
+
       # Main method for building queries to CouchDB design views
       #
       # @param options [Hash]
@@ -18,10 +27,11 @@ module WingedCouch
       #   result.count
       #   # => 5
       #
-      def build(options = {})
-        view, show = options.values_at(:view, :show)
-        return build_view(view) if view
-        return build_show(show) if show
+      def view(view_name)
+        view = Design::View.new(design_document, view_name)
+        default_query.
+          with_strategy(view.strategy).
+          with_path("/_design/winged_couch/_view/#{view_name}")
       end
 
       private
@@ -34,13 +44,6 @@ module WingedCouch
         WingedCouch::Queries::QueryBuilder.new.
           with_model(self).
           with_database(self.database)
-      end
-
-      def build_view(view_name)
-        view = Design::View.new(design_document, view_name)
-        default_query.
-          with_strategy(view.strategy).
-          with_path("/_design/winged_couch/_view/#{view_name}")
       end
 
     end

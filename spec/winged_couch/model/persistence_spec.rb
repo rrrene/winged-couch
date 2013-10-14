@@ -29,7 +29,7 @@ describe WingedCouch::Models::Persistence do
     before { record.save }
 
     it "should save object in db" do
-      database.get("/" + record._id).should be_a(Hash)
+      database.get(database.path.join(record._id)).should be_a(Hash)
     end
 
     it "should update record in db" do
@@ -56,7 +56,7 @@ describe WingedCouch::Models::Persistence do
       before { record.save; record.delete }
 
       it "removes record from db" do
-        expect { database.get("/" + record._id) }.to raise_error
+        expect { database.get(database.path.join(record._id)) }.to raise_error
       end
     end
 
@@ -81,7 +81,7 @@ describe WingedCouch::Models::Persistence do
       end
 
       it "updates document" do
-        database.get("/" + record._id)["field"].should eq("value2")
+        database.get(database.path.join(record._id))["field"].should eq("value2")
       end
     end
 

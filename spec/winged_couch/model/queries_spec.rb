@@ -15,7 +15,7 @@ describe WingedCouch::Models::Queries do
   end
 
   describe "querying map-only views" do
-    subject(:result) { ModelWithDesignDoc.build(view: "strings").perform.records }
+    subject(:result) { ModelWithDesignDoc.view("strings").perform.records }
 
     it "should return 3 records by default" do
       result.count.should eq 4
@@ -38,7 +38,7 @@ describe WingedCouch::Models::Queries do
   end
 
   describe "querying map-reduce views" do
-    subject(:result) { ModelWithDesignDoc.build(view: "four").perform.result }
+    subject(:result) { ModelWithDesignDoc.view("four").perform.result }
 
     it "returns 4" do
       result.should eq(4)
@@ -46,8 +46,8 @@ describe WingedCouch::Models::Queries do
   end
 
   describe "utilities" do
-    let(:query) { ModelWithDesignDoc.build(view: "by_name") }
-    let(:reduce_query) { ModelWithDesignDoc.build(view: "key_objects") }
+    let(:query) { ModelWithDesignDoc.view("by_name") }
+    let(:reduce_query) { ModelWithDesignDoc.view("key_objects") }
 
     describe ".descending" do
       let(:asc) { query.dup.descending(true).perform.records }
@@ -136,5 +136,11 @@ describe WingedCouch::Models::Queries do
       query.update_seq(true).perform.update_seq.should_not be_nil
     end
 
+  end
+
+  context ".has_views" do
+    it "defines sugar methods" do
+      ModelWithDesignDoc.strings
+    end
   end
 end

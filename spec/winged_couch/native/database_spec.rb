@@ -85,32 +85,6 @@ module WingedCouch
         end
       end
 
-      context "delegation to HTTP" do
-
-        let(:database) { Database.new("db_name") }
-
-        it "#get" do
-          HTTP.should_receive(:get).with("/db_name/123")
-          database.get("/123")
-        end
-
-        it "#post" do
-          HTTP.should_receive(:post).with("/db_name/123", some: "data")
-          database.post("/123", some: "data")
-        end
-
-        it "#put" do
-          HTTP.should_receive(:put).with("/db_name/123", some: "data")
-          database.put("/123", some: "data")
-        end
-
-        it "#delete" do
-          HTTP.should_receive(:delete).with("/db_name/123")
-          database.delete("/123")
-        end
-
-      end
-
       it "#inspect" do
         expected_str = "#<WingedCouch::Native::Database name='db_name'>"
         Database.new("db_name").inspect.should eq(expected_str)

@@ -33,7 +33,7 @@ module WingedCouch
       #
       def perform(options = {})
         validate
-        database.send(http_method, *query)
+        database.send(http_method, base_path.join(path), params)
       end
 
       def reset
@@ -57,17 +57,8 @@ module WingedCouch
         end
       end
 
-      def query
-        if http_method == "get"
-          url = params.empty? ? path : "#{path}?#{encoded_params}"
-          [url]
-        else
-          [path, params]
-        end
-      end
-
-      def encoded_params
-        params.map { |key, value| "#{key}=#{value}" }.join("&")
+      def base_path
+        database.path
       end
     end
   end

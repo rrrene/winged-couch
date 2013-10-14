@@ -15,6 +15,7 @@ module WingedCouch
   class Engine < ::Rails::Engine
   end if defined? Rails
 
+  autoload :HttpPath,    'winged_couch/http_path'
   autoload :HTTP,        'winged_couch/http'
   autoload :Model,       'winged_couch/model'
   autoload :ViewsLoader, 'winged_couch/views_loader'

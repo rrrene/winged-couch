@@ -20,7 +20,7 @@ module WingedCouch
       # @return Hash
       #
       def info
-        get("/")
+        get path
       end
 
       # Returns all dbs data
@@ -30,7 +30,7 @@ module WingedCouch
       # @return Hash
       #
       def all_dbs
-        get("/_all_dbs")
+        get path.join("_all_dbs")
       end
 
       # Returns data about active tasks
@@ -40,7 +40,7 @@ module WingedCouch
       # @return Hash
       #
       def active_tasks
-        get("/_active_tasks")
+        get path.join("_active_tasks")
       end
 
       # Creates replication according to passed data
@@ -71,7 +71,7 @@ module WingedCouch
       # @return Hash response from CouchDB
       #
       def replicate(data)
-        post("/replicate", data)
+        post path.join("replicate"), data
       end
 
       # Returns list of used generated UUIDs
@@ -83,13 +83,13 @@ module WingedCouch
       # @return [Hash]
       #
       def uuids(count = 1)
-        get("/_uuids?count=#{count}")
+        get path.join("_uuids"), count: count
       end
 
       # Restarts the server, requires admin privileges
       #
       def restart
-        post("/_restart")
+        post path.join("_restart")
       end
 
       # Returns server statistics
@@ -97,7 +97,7 @@ module WingedCouch
       # @return Hash
       #
       def stats
-        get("/_stats")
+        get path.join("_stats")
       end
 
       # Returns the tail of the server's log file, requires server admin privileges.
@@ -114,7 +114,18 @@ module WingedCouch
       def log(data = {})
         bytes  = data.fetch(:bytes, 1000)
         offset = data.fetch(:offset, 0)
-        RestClient.get("#{WingedCouch.url}/_log?bytes=#{bytes}&offset=#{offset}")
+        url = path.join("_log").to_s
+        RestClient.get url, bytes: bytes, offset: offset
+      end
+
+      private
+
+      def http
+        HTTP
+      end
+
+      def path
+        HTTP.path
       end
     end
 

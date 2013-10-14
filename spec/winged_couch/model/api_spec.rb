@@ -20,7 +20,7 @@ describe WingedCouch::Models::API do
 
   it ".create" do
     record_id = OneFieldModel.create(field: "value")._id
-    database.get("/" + record_id).should be_a(Hash)
+    database.get(database.path.join(record_id)).should be_a(Hash)
   end
 
   it "#inspect" do

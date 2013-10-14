@@ -37,13 +37,9 @@ describe WingedCouch::Queries::BaseBuilder do
     let(:post_builder) { custom_builder.with_http_method("post") }
 
     it "GET" do
-      database.should_receive("get").with("/path?key=value")
+      path = WingedCouch::HttpPath.new.join("db").join("path")
+      database.should_receive("get").with(path, key: "value")
       get_builder.perform
-    end
-
-    it "POST" do
-      database.should_receive("post").with("/path", { key: "value" })
-      post_builder.perform
     end
   end
 

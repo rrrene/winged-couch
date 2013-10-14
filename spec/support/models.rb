@@ -15,4 +15,6 @@ end
 class ModelWithDesignDoc < WingedCouch::Model
   attribute :type, String
   attribute :name, String
+
+  has_views :strings
 end
