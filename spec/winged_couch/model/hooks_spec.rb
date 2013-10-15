@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module WingedCouch
   module Models
-    describe Hooks do
+    describe Hooks, :with_database do
 
       class ModelWithHooks < WingedCouch::Model
         attribute :name, String
@@ -60,15 +60,6 @@ module WingedCouch
       end
 
       let(:database) { ModelWithHooks.database }
-
-      around(:each) do |example|
-        begin
-          database.create
-          example.run
-        ensure
-          database.drop
-        end
-      end
 
       let(:instance) { ModelWithHooks.create(name: "Name") }
       let(:data) { instance.temp_data }

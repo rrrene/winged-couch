@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe WingedCouch::Models::Persistence do
+describe WingedCouch::Models::Persistence, :with_database do
 
   # class OneFieldModel < WingedCouch::Model
   #   attribute :field, String
@@ -9,15 +9,6 @@ describe WingedCouch::Models::Persistence do
 
   subject(:record) { OneFieldModel.new(field: "value") }
   let(:database) { OneFieldModel.database }
-
-  around(:each) do |example|
-    begin
-      database.create
-      example.run
-    ensure
-      database.drop
-    end
-  end
 
   it ".database" do
     database.should be_a(WingedCouch::Native::Database)

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module WingedCouch
   module Design
-    describe Validation do
+    describe Validation, :with_database do
 
       class ModelWithValidation < WingedCouch::Model
         attribute :name, String
@@ -16,15 +16,6 @@ module WingedCouch
 
       let(:name_validation) { "function(newDoc) { if (newDoc.name == null) throw({forbidden: \"#{name_validation_message}\"}) }" }
       let(:age_validation)  { "function(newDoc) { if (newDoc.age  == null) throw({forbidden: \"#{age_validation_message}\"}) }" }
-
-      around(:each) do |example|
-        begin
-          database.create
-          example.run
-        ensure
-          database.drop
-        end
-      end
 
       it "uploads validation function to specified database" do
         Validation.upload(database, :name, name_validation)

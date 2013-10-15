@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module WingedCouch
   module Models
-    describe Validation do
+    describe Validation, :with_database do
 
       class ModelWithValidation < WingedCouch::Model
         attribute :name, String
@@ -11,14 +11,8 @@ module WingedCouch
 
       let(:database) { ModelWithValidation.database }
 
-      around(:each) do |example|
-        begin
-          database.create
-          ModelWithValidation.upload_validation!
-          example.run
-        ensure
-          database.drop
-        end
+      before do
+        ModelWithValidation.upload_validation!
       end
 
       let(:valid_record) { ModelWithValidation.new(name: "Name") }

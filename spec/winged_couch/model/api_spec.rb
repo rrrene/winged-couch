@@ -1,18 +1,9 @@
 require 'spec_helper'
 
-describe WingedCouch::Models::API do
+describe WingedCouch::Models::API, :with_database do
 
   let(:database) { OneFieldModel.database }
   let(:record) { OneFieldModel.new(field: "value") }
-
-  around(:each) do |example|
-    begin
-      database.create
-      example.run
-    ensure
-      database.drop
-    end
-  end
 
   it "#new" do
     record.field.should eq "value"

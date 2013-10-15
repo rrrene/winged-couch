@@ -1,17 +1,14 @@
 require 'spec_helper'
 
-describe WingedCouch::Models::Queries do
+describe WingedCouch::Models::Queries, :with_database do
 
-  before(:all) do
-    ModelWithDesignDoc.database.create
+  let(:database) { ModelWithDesignDoc.database }
+
+  before do
     upload_views(ModelWithDesignDoc)
     ModelWithDesignDoc.create(type: "string", name: "Ilya")
     3.times { ModelWithDesignDoc.create(type: "string", name: "Vasya") }
     ModelWithDesignDoc.create(type: "fixnum")
-  end
-
-  after(:all) do
-    ModelWithDesignDoc.database.drop
   end
 
   describe "querying map-only views" do

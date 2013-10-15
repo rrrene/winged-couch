@@ -1,23 +1,15 @@
 require 'spec_helper'
 
 module WingedCouch
-  describe ViewsLoader do
+  describe ViewsLoader, :with_database do
 
     let(:model) { ModelWithDesignDoc }
+    let(:database) { ModelWithDesignDoc.database }
     let(:loader) { ViewsLoader }
     let(:views) { ["all", "strings", "by_name", "four", "key_objects"] }
 
     before(:each) do
       loader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
-    end
-
-    around(:each) do |example|
-      begin
-        ModelWithDesignDoc.database.create
-        example.run
-      ensure
-        ModelWithDesignDoc.database.drop
-      end
     end
 
     describe ".fetch" do
