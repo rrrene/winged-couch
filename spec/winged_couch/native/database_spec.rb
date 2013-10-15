@@ -2,13 +2,7 @@ require 'spec_helper'
 
 module WingedCouch
   module Native
-    describe Database do
-
-      around(:each) do |example|
-        Database.each { |db| db.drop rescue nil }
-        example.run
-        Database.each { |db| db.drop rescue nil }
-      end
+    describe Database, :flush_dbs do
 
       context ".all" do
         it "returns all databases" do

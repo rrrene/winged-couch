@@ -23,7 +23,9 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
   config.order = 'random'
-  config.include CouchHelper, :couch
+  config.include Helpers::FlushDBs,     :flush_dbs
+  config.include Helpers::WithDatabase, :with_database
+  config.include Helpers::UploadViews,  :upload_views
 end
 
 

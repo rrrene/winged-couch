@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module WingedCouch
   module Native
-    describe Document do
+    describe Document, :with_database do
 
       let(:database) { Database.new("test") }
       let(:document_id) { "document_id" }
@@ -10,15 +10,6 @@ module WingedCouch
       subject(:document) { Document.new(database, data) }
       let(:data_with_revision) { data.merge(_rev: "revision") }
       let(:document_with_revision) { Document.new(database, data_with_revision) }
-
-      around(:each) do |example|
-        begin
-          database.create
-          example.run
-        ensure
-          database.drop
-        end
-      end
 
       describe "#initialize" do
         describe "storing passsed data" do
