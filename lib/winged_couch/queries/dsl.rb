@@ -45,7 +45,6 @@ module WingedCouch
       # @private
       def to_param(value)
         value.is_a?(String) ? value.inspect : value.to_json
-        # URI.encode(result)
       end
 
     end

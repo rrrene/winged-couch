@@ -1,6 +1,4 @@
 module WingedCouch
-
-  # @see QueryBuilder
   module Queries
 
     # Class for building low-level queries to CouchDB database
@@ -36,6 +34,7 @@ module WingedCouch
         database.send(http_method, base_path.join(path), params)
       end
 
+      # @private
       def reset
         @params = {}
       end

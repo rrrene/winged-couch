@@ -5,6 +5,15 @@ module WingedCouch
     #
     module Queries
 
+      # Defines method for each passed +view_names+
+      #
+      # @param view_names [Array<Symbol>]
+      #
+      # @example
+      #   class Comment < WingedCouch::Model
+      #     has_views :from_last_week, :from_last_month
+      #   end
+      #
       def has_views(*view_names)
         view_names.each do |view_name|
           define_singleton_method view_name do
@@ -16,13 +25,12 @@ module WingedCouch
 
       # Main method for building queries to CouchDB design views
       #
-      # @param options [Hash]
-      # @option options [String] :view name of design view
+      # @param view_name [String]
       #
       # @return [WingedCouch::QueryBuilder] query builder with configured path
       #
       # @example
-      #   result = Model.build(view: "cats").with_param("limit", 5).perform
+      #   result = Model.view("cats").with_param("limit", 5).perform
       #   # => [#<Model _id: "...", _rev: "...", ...>, ... ]
       #   result.count
       #   # => 5

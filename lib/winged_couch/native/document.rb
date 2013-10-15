@@ -20,8 +20,6 @@ module WingedCouch
       attr_accessor :database
       attr_accessor :data
 
-      # delegate :get, :post, :put, :delete, to: :database
-
       def initialize(database, data = {}, retrieve_revision = false)
         @database = database
         @data = data.with_indifferent_access

@@ -23,6 +23,7 @@ module WingedCouch
       include ActiveModel::Validations
       include ActiveModel::Conversion
 
+      # @private
       def to_key
         [_id]
       end

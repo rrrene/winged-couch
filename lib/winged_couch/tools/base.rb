@@ -6,12 +6,18 @@ module WingedCouch
 
       extend self
 
+      # Preloads all models from +app/models+ (or ENV["COUCH_MODELS_DIR"]) directory
+      #
+      # @see models_dir
+      #
       def preload_models
         raise %Q{Directory "#{models_dir}" doesn't exist!} unless Dir.exists?(models_dir)
         pattern = File.join(models_dir, "**", "*.rb")
         Dir[pattern].each { |f| require f }
       end
 
+      # Loops through models and yields each
+      #
       def each_model(options = {}, &block)
         WingedCouch::Model.subclasses.each do |klass|
           if options[:raise_exceptions] and not klass.database.exist?

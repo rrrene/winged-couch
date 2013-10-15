@@ -15,6 +15,7 @@ module WingedCouch
         # Class methods
         #
         module ClassMethods
+
           # @private
           #
           def each(&block)

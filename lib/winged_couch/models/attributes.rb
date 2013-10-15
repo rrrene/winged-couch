@@ -63,6 +63,7 @@ module WingedCouch
 
       end
 
+      # Returns native
       def native_document
         @native_document ||= Native::Document.new(self.class.database)
       end

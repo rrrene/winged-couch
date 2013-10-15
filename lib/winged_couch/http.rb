@@ -9,88 +9,66 @@ module WingedCouch
 
       attr_accessor :host
 
+      # Returns default blank http path
+      #   (with url to the CouchDB server)
+      #
+      # @return [WingedCouch::HttpPath]
+      #
       def path
         HttpPath.new
       end
 
-      # Send +GET+ request to specified url
+      # Performs +GET+ request
       #
-      # @param url [String]
+      # @param http_path [WingedCouch::HttpPath]
+      # @param params [Hash]
       #
       # @return response
       #
-      # @yield response
-      #
       # @example Usage:
-      #   response = WingedCouch::HTTP.get("http://my-couchdb-server.com")
-      #   # => { "couchdb" => "Welcome", "version" => "1.0.1" }
-      #
-      #   WingedCouch::HTTP.get("http://my-couchdb-server.com") do |response|
-      #     puts response
-      #   end
-      #   # => same output
+      #   response = WingedCouch::HTTP.get(path, { key: "value" })
       #
       def get(http_path, params = {})
         perform(:get, http_path, { params: params, content_type: :json })
       end
 
-      # Send +POST+ request to specified url
+      # Performs +POST+ request
       #
-      # @param url [String]
-      # @param body [String]
+      # @param http_path [WingedCouch::HttpPath]
+      # @param body [Hash]
       #
       # @return response
-      # @yield response
       #
       # @example Usage:
-      #   response = WingedCouch::HTTP.post("http://my-couchdb-server.com/db_name", { "asd" => "qwe" })
-      #   # => { "ok" => true, "id" => "some-long-id", "rev" => "revision" }
-      #
-      #   WingedCouch::HTTP.post("http://my-couchdb-server.com/db_name", { "asd" => "qwe" }) do |response|
-      #     puts response
-      #   end
-      #   # => same output
+      #   response = WingedCouch::HTTP.post(path, { key: "value" })
       #
       def post(http_path, body = {})
         perform(:post, http_path, body.to_json, { content_type: :json })
       end
 
-      # Send +PUT+ request to specified url
+      # Performs +PUT+ request
       #
-      # @param url [String]
-      # @param body [String]
+      # @param http_path [WingedCouch::HttpPath]
+      # @param body [Hash]
       #
       # @return response
-      # @yield response
       #
       # @example Usage:
-      #   response = WingedCouch::HTTP.put("http://my-couchdb-server.com/db_name")
-      #   # => { "ok" => true }
-      #
-      #   WingedCouch::HTTP.put("http://my-couchdb-server.com/db_name") do |response|
-      #     puts response
-      #   end
-      #   # => same output
+      #   response = WingedCouch::HTTP.put(path, { key: "value" })
       #
       def put(http_path, body = {})
         perform(:put, http_path, body.to_json, { content_type: :json })
       end
 
-      # Send +DELETE+ request to specified url
+      # Performs +DELETE+ request
       #
-      # @param url [String]
+      # @param http_path [WingedCouch::HttpPath]
+      # @param params [Hash]
       #
       # @return response
-      # @yield response
       #
       # @example Usage:
-      #   response = WingedCouch::HTTP.delete("http://my-couchdb-server.com/db_name")
-      #   # => { "ok" => true }
-      #
-      #   WingedCouch::HTTP.delete("http://my-couchdb-server.com/db_name") do |response|
-      #     puts response
-      #   end
-      #   # => same output
+      #   response = WingedCouch::HTTP.delete(path, { key: "value" })
       #
       def delete(http_path, params = {})
         perform(:delete, http_path, { params: params, content_type: :json })

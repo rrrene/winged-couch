@@ -1,4 +1,3 @@
-require 'winged_couch/native/databases/http_delegation'
 require 'winged_couch/native/databases/inspection'
 require 'winged_couch/native/databases/design'
 require 'winged_couch/native/databases/sugar'
@@ -122,8 +121,14 @@ module WingedCouch
         raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
       end
 
+      # @private
       def path
         HTTP.path.join(name)
+      end
+
+      # @private
+      def ==(other)
+        other.is_a?(self.class) && name == other.name
       end
 
       private

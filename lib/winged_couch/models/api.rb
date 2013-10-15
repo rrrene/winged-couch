@@ -33,7 +33,7 @@ module WingedCouch
           self.new(database.get(database.path.join(_id)))
         end
 
-        # Returns design views in current database
+        # Returns design views in the database
         #
         def views
           database.design_views.keys

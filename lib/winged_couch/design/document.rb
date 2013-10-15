@@ -1,17 +1,14 @@
 module WingedCouch
-
-  # Module with design items: Document and View
-  #
   module Design
 
     # Class for working with design documents.
     #
     class Document < Native::Document
 
+      # Default id of design document
+      #
       DOCUMENT_ID = "_design/winged_couch"
 
-      # Constructor
-      #
       # @param database [WingedCouch::Native::Database]
       # @param data [Hash] hash of attributes
       # @param retreive_revision [true, false] retrieves revision from the database if true passed
