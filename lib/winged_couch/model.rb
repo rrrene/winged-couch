@@ -19,6 +19,7 @@ module WingedCouch
 
     def self.inherited(klass)
       klass.database.create unless klass.database.exist?
+      super
     end
 
     if defined?(ActiveModel) # Rails support

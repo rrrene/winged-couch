@@ -4,7 +4,7 @@
 Like this
 ``` ruby
   class MyModel < WingedCouch::Model
-    use_global_database
+    use_database :global, typed: true
 
     attribute :name, String
     # ...
