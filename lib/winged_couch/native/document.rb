@@ -47,7 +47,7 @@ module WingedCouch
       def save
         begin
           @errors = []
-          response = database.put(path, data)
+          response = HTTP.put(path, data)
           @data[:_rev] = response["rev"]
           true
         rescue RestClient::Forbidden => e
@@ -73,7 +73,7 @@ module WingedCouch
       #
       def delete
         if exist?
-          database.delete(path, default_params)
+          HTTP.delete(path, default_params)
           @data["_rev"] = nil
           true
         else
@@ -105,7 +105,7 @@ module WingedCouch
       #
       def self.find(database, document_id)
         begin
-          data = database.get(database.path.join(document_id))
+          data = HTTP.get(database.path.join(document_id))
           self.new(database, data)
         rescue RestClient::ResourceNotFound
           nil
@@ -123,7 +123,7 @@ module WingedCouch
       # @return [Hash]
       #
       def get
-        database.get(path, default_params) rescue nil
+        HTTP.get(path, default_params) rescue nil
       end
 
       def base_path

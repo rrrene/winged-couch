@@ -37,7 +37,7 @@ module WingedCouch
         # Returns information about the database
         #
         def info
-          get path
+          HTTP.get path
         end
 
         # Returns count of documents in the database.

@@ -1,6 +1,7 @@
 require 'winged_couch/native/databases/inspection'
 require 'winged_couch/native/databases/design'
 require 'winged_couch/native/databases/sugar'
+require 'winged_couch/native/databases/bulk'
 
 module WingedCouch
 
@@ -33,6 +34,7 @@ module WingedCouch
       include Databases::Inspection
       include Databases::Design
       include Databases::Sugar
+      include Databases::Bulk
 
       # @private
       RESERVED_DATABASES = ["_users"]
@@ -54,8 +56,6 @@ module WingedCouch
       end
 
       attr_accessor :name
-
-      delegate :get, :post, :put, :delete, to: HTTP
 
       def initialize(name)
         @name = name

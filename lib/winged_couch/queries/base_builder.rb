@@ -31,7 +31,7 @@ module WingedCouch
       #
       def perform(options = {})
         validate
-        database.send(http_method, base_path.join(path), params)
+        HTTP.send(http_method, base_path.join(path), params)
       end
 
       # @private

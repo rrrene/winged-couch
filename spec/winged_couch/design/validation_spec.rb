@@ -19,14 +19,14 @@ module WingedCouch
 
       it "uploads validation function to specified database" do
         Validation.upload(database, :name, name_validation)
-        database.get(database.path.join("_design/validation_name"))["validate_doc_update"].should eq(name_validation)
+        HTTP.get(database.path.join("_design/validation_name"))["validate_doc_update"].should eq(name_validation)
       end
 
       it "stores multiple validations for same model" do
         Validation.upload(database, :name, name_validation)
         Validation.upload(database, :age, age_validation)
-        database.get(database.path.join("_design/validation_name"))["validate_doc_update"].should eq(name_validation)
-        database.get(database.path.join("_design/validation_age"))["validate_doc_update"].should eq(age_validation)
+        HTTP.get(database.path.join("_design/validation_name"))["validate_doc_update"].should eq(name_validation)
+        HTTP.get(database.path.join("_design/validation_age"))["validate_doc_update"].should eq(age_validation)
       end
 
       context "validates insertions" do
