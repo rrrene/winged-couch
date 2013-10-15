@@ -31,6 +31,11 @@ module WingedCouch
         response = HTTP.delete(db_path)
         response.should eq success_response
       end
+
+      it ".head" do
+        HTTP.put(db_path)
+        HTTP.head(db_path).should eq("")
+      end
     end
 
   end

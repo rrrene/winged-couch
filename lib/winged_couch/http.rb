@@ -74,6 +74,16 @@ module WingedCouch
         perform(:delete, http_path, { params: params, content_type: :json })
       end
 
+      # Performe +HEAD+ request
+      #
+      # @param http_path [WingedCouch::HttpPath]
+      #
+      # @return response
+      #
+      def head(http_path)
+        perform(:head, http_path)
+      end
+
       private
 
       def perform(request_type, *args)
@@ -84,7 +94,8 @@ module WingedCouch
 
       def fetch(request_type, url, args)
         start = Time.now
-        response = JSON.parse RestClient.send(request_type, url, *args)
+        raw_response = RestClient.send(request_type, url, *args)
+        response = request_type == :head ? raw_response : JSON.parse(raw_response)
         WingedCouch.logger.info "\e[0;32m#{request_type.upcase} #{url} (#{Time.now - start}) \e[0;0m" if WingedCouch.logger
         response
       end

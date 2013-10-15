@@ -48,12 +48,7 @@ module WingedCouch
         #   # => [#<WingedCouch::Native::Database name='_users'>]
         #
         def all
-          @all ||= Server.all_dbs.map { |db_name| self.new(db_name) }
-        end
-
-        # @private
-        def reset_all
-          @all = nil
+          Server.all_dbs.map { |db_name| self.new(db_name) }
         end
 
       end
@@ -90,7 +85,6 @@ module WingedCouch
       def drop
         check_database_name(name)
         HTTP.delete path
-        self.class.reset_all
         true
       rescue RestClient::Exception
         raise Exceptions::NoDatabase, "Can't drop database \"#{self.name}\" because it doesn't exist."
@@ -106,7 +100,10 @@ module WingedCouch
       #   db.exist?
       #   # => false
       def exist?
-        self.class.all.any? { |db| db.name == self.name }
+        HTTP.head path
+        true
+      rescue RestClient::ResourceNotFound
+        false
       end
 
       # Creates database with name `name`
@@ -115,7 +112,6 @@ module WingedCouch
       #
       def create
         HTTP.put path
-        self.class.reset_all
         self
       rescue => e
         raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")

@@ -34,7 +34,10 @@ module WingedCouch
       # @return [true, false]
       #
       def exist?
-        !!get
+        HTTP.head(path)
+        true
+      rescue RestClient::ResourceNotFound
+        false
       end
 
       # Saves document in the database

@@ -5,7 +5,6 @@ else
   require 'simplecov'
   SimpleCov.start do
     add_filter "/spec/"
-    add_filter "/templates/"
   end
 end
 
@@ -25,7 +24,6 @@ RSpec.configure do |config|
   config.order = 'random'
   config.include Helpers::FlushDBs,     :flush_dbs
   config.include Helpers::WithDatabase, :with_database
-  config.include Helpers::UploadViews,  :upload_views
 end
 
 

@@ -8,11 +8,9 @@ module Helpers
 
       around(:each) do |example|
         begin
-          WingedCouch::Native::Database.reset_all
           WingedCouch::Native::Database.each { |db| db.drop rescue nil }
           example.run
         ensure
-          WingedCouch::Native::Database.reset_all
           WingedCouch::Native::Database.each { |db| db.drop rescue nil }
         end
       end
