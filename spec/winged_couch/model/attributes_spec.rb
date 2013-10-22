@@ -4,12 +4,14 @@ module WingedCouch
   module Models
     describe Attributes do
 
-      # class SimpleModel < WingedCouch::Model
-      #   attribute :name, String
-      #   attribute :gender, Symbol, default: "male"
-      #   attribute :number, Fixnum
-      #   attribute :unsupported, Object
-      # end
+      UnsupportedClass = Class.new
+
+      class SimpleModel < WingedCouch::Model
+        attribute :name, String
+        attribute :gender, Symbol, default: "male"
+        attribute :number, Fixnum
+        attribute :unsupported, UnsupportedClass
+      end
 
       it ".attribute_names" do
         SimpleModel.attribute_names.should eq [:name, :gender, :number, :unsupported]

@@ -1,7 +1,4 @@
 module WingedCouch
-
-  # Module with mixins for WingedCouch::Model class
-  #
   module Models
 
     # Module for defining model attributes
@@ -87,6 +84,8 @@ module WingedCouch
           value.to_sym
         elsif klass == Object
           value
+        elsif klass == Time
+          Time.parse(value)
         else
           raise Exceptions::UnsupportedType, "Unsupported class #{klass} used for type-casting attribute in model #{self.class.name}"
         end

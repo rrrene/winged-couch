@@ -7,115 +7,145 @@ module WingedCouch
       class ModelWithHooks < WingedCouch::Model
         attribute :name, String
 
-        def temp_data
-          @temp_data ||= []
+        def data
+          @data ||= []
         end
 
         def flush
-          @temp_data = []
+          @data = []
         end
+      end
 
-        before :save do
-          temp_data << :block_before_save
-        end
-
-        after :save do
-          temp_data << :block_after_save
-        end
+      class ModelWithSaveHooks < ModelWithHooks
+        before(:save) { data << :block_before_save }
+        after(:save)  { data << :block_after_save  }
 
         before :save, :set_method_before_save
-        after  :save, :set_method_after_save
+        after :save,  :set_method_after_save
 
         def set_method_before_save
-          temp_data << :method_before_save
+          data << :method_before_save
         end
 
         def set_method_after_save
-          temp_data << :method_after_save
-        end
-
-        def before_update
-          temp_data << :before_update
-        end
-
-        before :update, :before_update
-
-        def after_update
-          temp_data << :after_update
-        end
-
-        after :update, :after_update
-
-        def before_delete
-          temp_data << :before_delete
-        end
-
-        before :delete, :before_delete
-
-        def after_delete
-          temp_data << :after_delete
-        end
-
-        after :delete, :after_delete
-      end
-
-      let(:database) { ModelWithHooks.database }
-
-      let(:instance) { ModelWithHooks.create(name: "Name") }
-      let(:data) { instance.temp_data }
-
-      context "block hooks" do
-        it "runs before hooks" do
-          data.should include(:block_before_save)
-        end
-
-        it "runs after hooks" do
-          data.should include(:block_after_save)
+          data << :method_after_save
         end
       end
 
-      context "method hooks" do
-        it "runs before hooks" do
-          data.should include(:method_before_save)
+      class ModelWithUpdateHooks < ModelWithHooks
+        before(:update) { data << :block_before_update }
+        after(:update)  { data << :block_after_update  }
+
+        before :update, :set_method_before_update
+        after :update,  :set_method_after_update
+
+        def set_method_before_update
+          data << :method_before_update
         end
 
-        it "runs after hooks" do
-          data.should include(:method_before_save)
-        end
-      end
-
-      it "runs hooks in correct order" do
-        data.index(:method_before_save).should < data.index(:method_after_save)
-        data.index(:block_before_save).should < data.index(:block_after_save)
-      end
-
-      context "before/after update hooks" do
-        before { instance.flush }
-
-        it "runs before and after update hooks" do
-          instance.update(name: "Name2")
-          data.should eq([:before_update, :after_update])
-        end
-
-        it "doesn't run after update hooks if record wasn't updated" do
-          instance._id = "non-existing-id"
-          instance.update(name: "Name2") rescue nil
-          data.should eq([:before_update])
+        def set_method_after_update
+          data << :method_after_update
         end
       end
 
-      context "before/after delete hooks" do
-        before { instance.flush }
+      class ModelWithDeleteHooks < ModelWithHooks
+        before(:delete) { data << :block_before_delete }
+        after(:delete)  { data << :block_after_delete  }
 
-        it "runs before and after delete hooks" do
-          instance.delete
-          data.should eq([:before_delete, :after_delete])
+        before :delete, :set_method_before_delete
+        after :delete,  :set_method_after_delete
+
+        def set_method_before_delete
+          data << :method_before_delete
         end
 
-        it "doesn't run after delete hooks if record wasn't deleted" do
-          instance._id = "missing-id"
-          instance.delete rescue nil
-          data.should eq([:before_delete])
+        def set_method_after_delete
+          data << :method_after_delete
+        end
+      end
+
+      {
+        save: {
+          model: ModelWithSaveHooks,
+          action: proc { |record| nil }
+        },
+        update: {
+          model: ModelWithUpdateHooks,
+          action: proc { |record| record.update(name: "Name2") }
+        },
+        delete: {
+          model: ModelWithDeleteHooks,
+          action: proc { |record| record.delete }
+        }
+      }.each do |hook_type, hook_data|
+        context "#{hook_type} hooks" do
+          let(:model) { hook_data[:model] }
+          let(:database) { model.database }
+          let(:record) { model.create(name: "Name") }
+
+          before { hook_data[:action].call(record) }
+
+          context "before hooks" do
+            it "runs block hooks" do
+              record.data.should include(:"block_before_#{hook_type}")
+            end
+
+            it "runs method hookd" do
+              record.data.should include(:"method_before_#{hook_type}")
+            end
+          end
+
+          context "after hooks" do
+            it "runs block hooks" do
+              record.data.should include(:"block_after_#{hook_type}")
+            end
+
+            it "runs method hookd" do
+              record.data.should include(:"method_after_#{hook_type}")
+            end
+          end
+
+          context "order of running hooks" do
+
+            let(:index) do
+              {
+                block_before: record.data.index(:"block_before_#{hook_type}"),
+                method_before: record.data.index(:"method_before_#{hook_type}"),
+                block_after: record.data.index(:"block_after_#{hook_type}"),
+                method_after: record.data.index(:"method_after_#{hook_type}")
+              }
+            end
+
+            it "runs all hooks in correct order" do
+              index[:block_before].should < index[:block_after]
+              index[:block_before].should < index[:method_after]
+
+              index[:method_before].should < index[:block_after]
+              index[:method_before].should < index[:method_after]
+            end
+          end
+        end
+      end
+
+      context "after initialize hook" do
+        class ModelWithInitializeHooks < ModelWithHooks
+          after(:initialize) { data << :block_initialize }
+          after :initialize, :after_initialize_method
+
+          def after_initialize_method
+            data << :method_initialize
+          end
+        end
+
+        let(:database) { ModelWithInitializeHooks.database }
+        let(:record) { ModelWithInitializeHooks.new(name: "Name") }
+
+        it "runs block hooks" do
+          record.data.should include(:block_initialize)
+        end
+
+        it "runs method hooks" do
+          record.data.should include(:method_initialize)
         end
       end
 

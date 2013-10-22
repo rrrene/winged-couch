@@ -4,6 +4,7 @@ require 'winged_couch/models/api'
 require 'winged_couch/models/queries'
 require 'winged_couch/models/validation'
 require 'winged_couch/models/hooks'
+require 'winged_couch/models/bulk'
 
 module WingedCouch
 
@@ -16,6 +17,7 @@ module WingedCouch
     extend  ::WingedCouch::Models::Queries
     include ::WingedCouch::Models::Validation
     include ::WingedCouch::Models::Hooks
+    extend  ::WingedCouch::Models::Bulk
 
     def self.inherited(klass)
       klass.database.create unless klass.database.exist?

@@ -39,6 +39,10 @@ module WingedCouch
           database.design_views.keys
         end
 
+        def count
+          database.info["doc_count"]
+        end
+
       end
 
       # Constructor
@@ -55,6 +59,7 @@ module WingedCouch
             send("#{attribute}=", value)
           end
         end
+        run_hooks(:after, :initialize)
       end
 
       # @private
@@ -69,6 +74,13 @@ module WingedCouch
 
       alias_method :to_s,   :inspect
       alias_method :to_str, :inspect
+
+      def with!(data = {})
+        data.each do |attr_name, attr_value|
+          public_send("#{attr_name}=", attr_value)
+        end
+        self
+      end
 
     end
   end

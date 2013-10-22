@@ -134,6 +134,19 @@ module WingedCouch
 
       end
 
+      describe ".bulk" do
+        let(:data) do
+          [ { field: "value1" }, { field: "value2" } ]
+        end
+
+        let(:database) { Database.create(:db) }
+
+        it "inserts multiple documents to the database" do
+          database.bulk(data)
+          HTTP.get(database.path.join("_all_docs"))["total_rows"].should eq(2)
+        end
+      end
+
     end
 
   end

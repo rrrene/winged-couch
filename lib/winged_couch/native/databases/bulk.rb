@@ -1,3 +1,5 @@
+require 'active_support/core_ext/array/grouping.rb'
+
 module WingedCouch
   module Native
     module Databases
@@ -6,11 +8,11 @@ module WingedCouch
       #
       module Bulk
         def bulk(docs)
-          post bulk_path, docs
+          HTTP.post bulk_path, { docs: docs }
         end
 
         def bulk_path
-          path.join("_bulk")
+          path.join("_bulk_docs")
         end
       end
 

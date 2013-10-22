@@ -56,8 +56,13 @@ module WingedCouch
       #
       def save
         native_document._id ||= SecureRandom.hex
-        run_hooks(:before, :save)
-        native_document.save && run_hooks(:after, :save)
+        if self.class.bulk?
+          self.class.bulk_records << self
+          :bulk
+        else
+          run_hooks(:before, :save)
+          native_document.save && run_hooks(:after, :save)
+        end
       end
 
       # Deletes record from the database
