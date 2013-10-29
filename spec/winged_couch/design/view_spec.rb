@@ -2,22 +2,14 @@ require 'spec_helper'
 
 module WingedCouch
   module Design
-    describe View do
+    describe View, :with_database do
 
       let(:database) { Native::Database.new("my_db") }
       let(:design_document) { Document.new(database) }
-      subject(:view) { View.new(design_document, "all") }
       let(:text) { "function(doc) { emit(doc.id, doc); }" }
+      subject(:view) { View.new(design_document, "all") }
 
-      around(:each) do |example|
-        begin
-          database.create
-          design_document.save
-          example.run
-        ensure
-          database.drop
-        end
-      end
+      before { design_document.save }
 
       describe "#initialize" do
         its(:design_document) { should eq(design_document) }

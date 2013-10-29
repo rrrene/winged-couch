@@ -18,17 +18,10 @@ module WingedCouch
       end
 
       describe "#attributes" do
-        subject(:record) { SimpleModel.new }
+        let(:attributes) { { name: "name", gender: :gender, number: 123 } }
+        let(:expected_attributes) { attributes.merge(unsupported: nil) }
 
-        before do
-          record.name = "name"
-          record.gender = "gender"
-          record.number = "123"
-        end
-
-        let(:expected_attributes) do
-          { name: "name", gender: :gender, number: 123, unsupported: nil }
-        end
+        subject(:record) { SimpleModel.new(attributes) }
 
         its(:attributes) { should eq(expected_attributes) }
       end
