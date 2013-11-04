@@ -4,7 +4,7 @@ module WingedCouch
   describe HttpPath do
     let(:host) { "host" }
 
-    let(:http_path) { HttpPath.new }
+    subject(:http_path) { HttpPath.new }
 
     describe "#initialize" do
       it "stores url" do

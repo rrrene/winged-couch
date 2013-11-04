@@ -10,35 +10,28 @@ describe WingedCouch::Configuration do
 
   after(:each) { WingedCouch.reset_configuration! }
 
-  context "#reset_configuration!" do
-    it "should reset host" do
-      WingedCouch.host = configured_host
-      WingedCouch.reset_configuration!
-      WingedCouch.host.should eq default_host
-    end
+  subject(:config) { WingedCouch }
 
-    it "should reset port" do
-      WingedCouch.port = "port"
+  context "#reset_configuration!" do
+
+    before do
+      WingedCouch.host = configured_host
+      WingedCouch.port = configured_port
       WingedCouch.reset_configuration!
-      WingedCouch.port.should eq default_port
     end
+    
+    its(:host) { should eq default_host }
+    its(:port) { should eq default_port }
   end
 
   context "without configuration" do
-
     before { WingedCouch.reset_configuration! }
 
-    it "#host" do
-      WingedCouch.host.should eq default_host
-    end
-
-    it "#port" do
-      WingedCouch.port.should eq default_port
-    end
+    its(:host) { should eq default_host }
+    its(:port) { should eq default_port }
   end
 
   context "with configuration" do
-
     before do
       WingedCouch.setup do |config|
         config.host = configured_host
@@ -46,23 +39,22 @@ describe WingedCouch::Configuration do
       end
     end
 
-    it "#host" do
-      WingedCouch.host.should eq configured_host
-    end
-
-    it "#port" do
-      WingedCouch.port.should eq configured_port
-    end
+    its(:host) { should eq configured_host }
+    its(:port) { should eq configured_port }
   end
 
-  it "#url" do
-    WingedCouch.host = "host"
-    WingedCouch.port = "port"
-    WingedCouch.url.should eq "host:port"
+  context "#url" do
+    before do
+      WingedCouch.host = "host"
+      WingedCouch.port = "port"
+    end
+
+    its(:url) { should eq("host:port") }
   end
 
-  it "#inspect" do
-    WingedCouch.stub(:url => "url")
-    WingedCouch.inspect.should eq "#<WingedCouch connected to url>"
+  context "#inspect" do
+    before { WingedCouch.stub(:url => "url") }
+    let(:expected_url) { "#<WingedCouch connected to url>" }
+    its(:inspect) { should eq(expected_url) }
   end
 end
