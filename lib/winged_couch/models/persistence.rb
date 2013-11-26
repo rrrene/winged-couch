@@ -24,7 +24,11 @@ module WingedCouch
         # @return [WingedCouch::Database]
         #
         def database
-          @database ||= WingedCouch::Native::Database.new(database_name)
+          @database ||= begin
+            database = WingedCouch::Native::Database.new(database_name)
+            database.create unless database.exist?
+            database
+          end
         end
 
         private
