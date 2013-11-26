@@ -82,6 +82,10 @@ module WingedCouch
         self
       end
 
+      def with(data = {})
+        dup.with!(data)
+      end
+
     end
   end
 end

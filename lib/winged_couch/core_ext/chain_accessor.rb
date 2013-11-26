@@ -38,21 +38,21 @@ module WingedCouch
       #   i.options # but options for accessor
       #   # => { "key" => "value" }
       #
-      def chain_accessor(attr_name, options = {})
+      def chain_accessor(attr_name, options = {}, &block)
 
         attr_accessor attr_name
 
         if options[:as] == :hash
-          define_hash_chash_accessor(attr_name, options)
+          define_hash_chain_accessor(attr_name, options, &block)
         else
-          define_key_value_chain_accesor(attr_name, options)
+          define_kv_chain_accessor(attr_name, options, &block)
         end
 
       end
 
       private
 
-      def define_hash_chash_accessor(attr_name, options)
+      def define_hash_chain_accessor(attr_name, options, &block)
         define_method attr_name do
           hash = instance_variable_get("@#{attr_name}")
           hash = instance_variable_set("@#{attr_name}", {}) unless hash
@@ -60,12 +60,14 @@ module WingedCouch
         end
 
         define_method "with_#{options[:chain_name] || attr_name}" do |key, value|
-          send(attr_name)[key] = value
+          hash = send(attr_name)
+          hash[key] = value
+          block.call(key, value, hash) if block
           self
         end
       end
 
-      def define_key_value_chain_accesor(attr_name, options)
+      def define_kv_chain_accessor(attr_name, options, &block)
         if default = options[:default]
           define_method attr_name do
             if value = instance_variable_get("@#{attr_name}")
@@ -78,6 +80,7 @@ module WingedCouch
 
         define_method "with_#{attr_name}" do |value|
           send("#{attr_name}=", value)
+          block.call(key, value) if block
           self
         end
       end
