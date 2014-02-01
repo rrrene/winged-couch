@@ -6,7 +6,7 @@ module WingedCouch
 
       context ".all" do
         it "returns all databases" do
-          Database.all.should eq [Database.new("_users")]
+          Database.all.map(&:name).should eq(Server.all_dbs)
         end
       end
 

@@ -37,7 +37,7 @@ module WingedCouch
       include Databases::Bulk
 
       # @private
-      RESERVED_DATABASES = ["_users"]
+      RESERVED_DATABASES = ["_users", "_replicator"]
 
       class << self
 
@@ -87,7 +87,7 @@ module WingedCouch
         HTTP.delete path
         true
       rescue RestClient::Exception
-        raise Exceptions::NoDatabase, "Can't drop database \"#{self.name}\" because it doesn't exist."
+        Exceptions::NoDatabase.raise(name)
       end
 
       # Returns true if database exist in CouchDB
@@ -114,12 +114,12 @@ module WingedCouch
         HTTP.put path
         self
       rescue => e
-        raise Exceptions::DatabaseAlreadyExist.new("Database \"#{name}\" already exist.")
+        Exceptions::DatabaseAlreadyExist.raise(name)
       end
 
       # @private
       def path
-        HTTP.path.join(name)
+        HTTP.path.join(name, :database)
       end
 
       # @private
@@ -130,9 +130,7 @@ module WingedCouch
       private
 
       def check_database_name(name)
-        if RESERVED_DATABASES.include?(name)
-          raise Exceptions::ReservedDatabase, "Database \"#{self.name}\" is internal, you can't remove it."
-        end
+        Exceptions::ReservedDatabase.raise(name) if RESERVED_DATABASES.include?(name)
       end
 
     end

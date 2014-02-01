@@ -87,7 +87,7 @@ module WingedCouch
         elsif klass == Time
           Time.parse(value)
         else
-          raise Exceptions::UnsupportedType, "Unsupported class #{klass} used for type-casting attribute in model #{self.class.name}"
+          Exceptions::UnsupportedType.raise(klass, self.class.name)
         end
       end
 

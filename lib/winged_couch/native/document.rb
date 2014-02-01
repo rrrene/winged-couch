@@ -77,7 +77,7 @@ module WingedCouch
           @data["_rev"] = nil
           true
         else
-          raise Exceptions::DocumentMissing, "Can't delete document with id \"#{_id}\" because it doesn't exist"
+          Exceptions::DocumentMissing.raise(%Q{Can't delete document with id "#{_id}" because it doesn't exist})
         end
       end
 
@@ -92,7 +92,7 @@ module WingedCouch
           @data.merge!(data)
           save
         else
-          raise Exceptions::DocumentMissing, "Can't update document because it doesn't exist"
+          Exceptions::DocumentMissing.raise(%Q{Can't update document with id "#{_id}" because it doesn't exist})
         end
       end
 
@@ -131,7 +131,7 @@ module WingedCouch
       end
 
       def path
-        base_path.join(_id)
+        base_path.join(_id, :document)
       end
 
       def default_params

@@ -14,11 +14,19 @@ module WingedCouch
       it "makes path blank" do
         http_path.path.should eq([])
       end
+
+      it "sets level to :server" do
+        http_path.level.should eq(:server)
+      end
     end
 
     describe "#join" do
       it "stores passed path" do
         http_path.join("path").path.should eq(["path"])
+      end
+
+      it "overrides level" do
+        http_path.join("path", :database).level.should eq(:database)
       end
     end
 

@@ -4,11 +4,12 @@ module WingedCouch
   #
   class HttpPath
 
-    attr_accessor :host, :path
+    attr_accessor :host, :path, :level
 
     def initialize(host = WingedCouch.url)
       @host = without_slashes(host.to_s)
       @path = []
+      @level = :server
     end
 
     # Joins current path with passed
@@ -17,8 +18,9 @@ module WingedCouch
     #
     # @return [WingedCouch::HttpPath] self
     #
-    def join!(path)
+    def join!(path, level = :server)
       @path << without_slashes(path.to_s)
+      @level = level
       self
     end
 
@@ -28,8 +30,8 @@ module WingedCouch
     #
     # @return [WingedCouch::HttpPath] new path
     #
-    def join(path)
-      dup.join!(path)
+    def join(path, level = :server)
+      dup.join!(path, level)
     end
 
     # Returns new HttpPath instance with joined path
@@ -37,8 +39,8 @@ module WingedCouch
     # @param path [String, Symbol]
     #
     # @return path
-    def self.join(path)
-      new.join(path)
+    def self.join(path, level = :server)
+      new.join(path, level)
     end
 
     # Returns string representation of http path
