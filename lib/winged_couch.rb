@@ -20,6 +20,10 @@ module WingedCouch
   autoload :Model,       'winged_couch/model'
   autoload :ViewsLoader, 'winged_couch/views_loader'
 
+  module Abstract
+    autoload :Database, 'winged_couch/abstract/database'
+  end
+
   module Native
     autoload :Server,   'winged_couch/native/server'
     autoload :Database, 'winged_couch/native/database'
