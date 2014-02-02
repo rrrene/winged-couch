@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "winged_couch"
   spec.version       = WingedCouch::VERSION
   spec.authors       = ["Ilya Bylich"]
-  spec.email         = ["ilya.bylich@productmadness.com"]
+  spec.email         = ["ibylich@gmail.com"]
   spec.description   = %q{ORM for CouchDB}
   spec.summary       = %q{ORM for CouchDB}
   spec.homepage      = ""

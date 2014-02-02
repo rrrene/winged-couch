@@ -86,10 +86,10 @@ module WingedCouch
 
       private
 
-      def perform(request_type, *args)
-        url = args.shift.to_s
-        response = fetch(request_type, url, args)
-        response
+      def perform(request_type, http_path, *args)
+        fetch(request_type, http_path.to_s, args)
+      rescue RestClient::Exception => exception
+        Exceptions::Handler.new(request_type, http_path, args, exception).run
       end
 
       def fetch(request_type, url, args)

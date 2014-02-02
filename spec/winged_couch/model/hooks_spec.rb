@@ -10,10 +10,6 @@ module WingedCouch
         def data
           @data ||= []
         end
-
-        def flush
-          @data = []
-        end
       end
 
       class ModelWithSaveHooks < ModelWithHooks

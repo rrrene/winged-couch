@@ -34,9 +34,9 @@ module WingedCouch
       # @return [true, false]
       #
       def exist?
-        HTTP.head(path)
+        HTTP.head path
         true
-      rescue RestClient::ResourceNotFound
+      rescue Exceptions::DocumentMissing
         false
       end
 
@@ -72,28 +72,17 @@ module WingedCouch
       # @raise [WingedCouch::Exceptions::DocumentMissing] if document doesn't exits
       #
       def delete
-        if exist?
-          HTTP.delete(path, default_params)
-          @data["_rev"] = nil
-          true
-        else
-          Exceptions::DocumentMissing.raise(%Q{Can't delete document with id "#{_id}" because it doesn't exist})
-        end
+        HTTP.delete(path, default_params)
+        @data["_rev"] = nil
       end
 
       # Updates document with passed data
       #
       # @return [WingedCouch::Native::Document] updated document with latest data and revision
       #
-      # @raise [WingedCouch::Exceptions::DocumentMissing] if document doesn't exist
-      #
       def update(data = {})
-        if exist?
-          @data.merge!(data)
-          save
-        else
-          Exceptions::DocumentMissing.raise(%Q{Can't update document with id "#{_id}" because it doesn't exist})
-        end
+        @data.merge!(data)
+        save
       end
 
       # Finds document in the database by id
@@ -104,16 +93,21 @@ module WingedCouch
       # @return [WingedCouch::Native::Document]
       #
       def self.find(database, document_id)
+        document = self.new(database, _id: document_id)
         begin
-          data = HTTP.get(database.path.join(document_id))
+          data = HTTP.get(document.path)
           self.new(database, data)
-        rescue RestClient::ResourceNotFound
+        rescue Exceptions::DocumentMissing
           nil
         end
       end
 
       def errors
         @errors ||= []
+      end
+
+      def path
+        base_path.join(_id, :document)
       end
 
       private
@@ -130,9 +124,6 @@ module WingedCouch
         database.path
       end
 
-      def path
-        base_path.join(_id, :document)
-      end
 
       def default_params
         _rev ? { rev: _rev } : {}

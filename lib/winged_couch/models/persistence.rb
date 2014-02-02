@@ -73,7 +73,8 @@ module WingedCouch
       #
       def delete
         run_hooks(:before, :delete)
-        native_document.delete && run_hooks(:after, :delete)
+        native_document.delete
+        run_hooks(:after, :delete)
       end
 
       # Updates record with passed data
@@ -85,7 +86,8 @@ module WingedCouch
       #
       def update(data)
         run_hooks(:before, :update)
-        native_document.update(data) && run_hooks(:after, :update)
+        native_document.update(data)
+        run_hooks(:after, :update)
       end
 
       # Returns true if object is persisted

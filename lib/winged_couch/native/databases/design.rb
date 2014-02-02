@@ -17,7 +17,7 @@ module WingedCouch
         def design_views
           design_document.data[:views]
         rescue => e
-          raise Exceptions::NoDesignDocument.new("Can't find design document in database \"#{self.name}\".")
+          Exceptions::NoDesignDocument.raise(name)
         end
 
       end

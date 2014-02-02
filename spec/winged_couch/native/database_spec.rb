@@ -55,14 +55,6 @@ module WingedCouch
             expect { database.drop }.to raise_error(Exceptions::NoDatabase)
           end
         end
-
-        context "when database name is reserved" do
-          let(:database) { Database.new("_users") }
-
-          it "raises exception" do
-            expect { database.drop }.to raise_error(Exceptions::ReservedDatabase)
-          end
-        end
       end
 
       context "#exist?" do

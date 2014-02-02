@@ -152,28 +152,15 @@ module WingedCouch
       end
 
       describe "#update" do
-        context "when document exist" do
-          before do
-            document.save
-            database.documents_count.should eq(1)
-          end
-
-          it "updates document" do
-            document.update(key: "value2")
-            database.documents_count.should eq(1)
-            document.data[:key] = "value2"
-          end
+        before do
+          document.save
+          database.documents_count.should eq(1)
         end
 
-        context "when document doesn't exist" do
-          it "raises exception when document doesn't exist" do
-            expect { document.update(key: "value2") }.to raise_error(Exceptions::DocumentMissing)
-          end
-
-          it "doesn't updates instance" do
-            document.update(key: "value2") rescue nil
-            document.data[:key].should_not eq("value2")
-          end
+        it "updates document" do
+          document.update(key: "value2")
+          database.documents_count.should eq(1)
+          document.data[:key] = "value2"
         end
       end
 

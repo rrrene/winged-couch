@@ -1,3 +1,5 @@
+require 'winged_couch/exceptions/handler'
+
 module WingedCouch
 
   # @private

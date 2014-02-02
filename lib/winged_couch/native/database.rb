@@ -4,7 +4,6 @@ require 'winged_couch/native/databases/sugar'
 require 'winged_couch/native/databases/bulk'
 
 module WingedCouch
-
   module Native
 
     # Class for managing databases in CouchDB
@@ -86,8 +85,6 @@ module WingedCouch
         check_database_name(name)
         HTTP.delete path
         true
-      rescue RestClient::Exception
-        Exceptions::NoDatabase.raise(name)
       end
 
       # Returns true if database exist in CouchDB
@@ -102,7 +99,7 @@ module WingedCouch
       def exist?
         HTTP.head path
         true
-      rescue RestClient::ResourceNotFound
+      rescue Exceptions::NoDatabase
         false
       end
 
@@ -113,8 +110,6 @@ module WingedCouch
       def create
         HTTP.put path
         self
-      rescue => e
-        Exceptions::DatabaseAlreadyExist.raise(name)
       end
 
       # @private
