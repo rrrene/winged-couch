@@ -1,4 +1,3 @@
-require 'winged_couch/native/databases/design'
 require 'winged_couch/native/databases/sugar'
 require 'winged_couch/native/databases/bulk'
 require 'winged_couch/native/databases/operations'
@@ -10,7 +9,6 @@ module WingedCouch
     #
     class Database < Abstract::Database
 
-      include Databases::Design
       include Databases::Sugar
       include Databases::Bulk
       include Databases::Operations
@@ -35,6 +33,7 @@ module WingedCouch
       def drop
         check_database_name(name)
         HTTP.delete path
+        @design_document = nil
         true
       end
 
@@ -70,6 +69,12 @@ module WingedCouch
       #
       def path
         HTTP.path.join(name, :database)
+      end
+
+      def design_document
+        @design_document ||= Design::Document.new(self).tap do |document|
+          document.save unless document.exist?
+        end
       end
 
       private

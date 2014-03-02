@@ -1,25 +1,52 @@
 require 'spec_helper'
 
-describe WingedCouch::Models::Queries, :with_database do
+describe WingedCouch::Models::Queries, :with_model do
 
-  let(:database) { ModelWithDesignDoc.database }
+  model :TestModel do
+    attribute :type, String
+    attribute :name, String
 
-  before do
-    upload_views(ModelWithDesignDoc)
-    ModelWithDesignDoc.create(type: "string", name: "Ilya")
-    3.times { ModelWithDesignDoc.create(type: "string", name: "Vasya") }
-    ModelWithDesignDoc.create(type: "fixnum")
+    has_views :strings
+  end
+
+  views({
+    all: {
+      map:    "function(doc) { emit(doc) }",
+      reduce: "function(doc) { emit(doc) }"
+    },
+    strings: {
+      map:    "function(doc) { if (doc.type == 'string') emit(doc) }"
+    },
+    by_name: {
+      map:    "function(doc) { if (doc.name) { emit(doc.name, doc) } }"
+    },
+    four: {
+      map:    "function(doc) { emit(doc) }",
+      reduce: "function(key, values) { return 4 }"
+    },
+    key_objects: {
+      map:    "function(doc) { emit(doc, doc.name.length) }",
+      reduce: "function(key, values) { return sum(values) }"
+    }
+  })
+
+  before(:each) do
+    TestModel.create(type: "string", name: "Ilya")
+    3.times { TestModel.create(type: "string", name: "Vasya") }
+    TestModel.create(type: "fixnum")
+
+    WingedCouch::ViewsLoader.upload_views_for(TestModel)
   end
 
   describe "querying map-only views" do
-    subject(:result) { ModelWithDesignDoc.view("strings").perform.records }
+    subject(:result) { TestModel.view("strings").perform.records }
 
     it "should return 3 records by default" do
       result.count.should eq 4
     end
 
     it "should return instances of this class" do
-      result.each { |record| record.should be_a(ModelWithDesignDoc) }
+      result.each { |record| record.should be_a(TestModel) }
     end
 
     it "should return records with type 'string'" do
@@ -35,7 +62,7 @@ describe WingedCouch::Models::Queries, :with_database do
   end
 
   describe "querying map-reduce views" do
-    subject(:result) { ModelWithDesignDoc.view("four").perform.result }
+    subject(:result) { TestModel.view("four").perform.result }
 
     it "returns 4" do
       result.should eq(4)
@@ -43,8 +70,8 @@ describe WingedCouch::Models::Queries, :with_database do
   end
 
   describe "utilities" do
-    let(:query) { ModelWithDesignDoc.view("by_name") }
-    let(:reduce_query) { ModelWithDesignDoc.view("key_objects") }
+    let(:query) { TestModel.view("by_name") }
+    let(:reduce_query) { TestModel.view("key_objects") }
 
     describe ".descending" do
       let(:asc) { query.dup.descending(true).perform.records }
@@ -137,7 +164,7 @@ describe WingedCouch::Models::Queries, :with_database do
 
   context ".has_views" do
     it "defines sugar methods" do
-      ModelWithDesignDoc.strings
+      TestModel.strings
     end
   end
 end

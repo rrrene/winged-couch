@@ -7,14 +7,14 @@ module WingedCouch
 
       # Default id of design document
       #
-      DOCUMENT_ID = "_design/winged_couch"
+      DEFAULT_DOCUMENT_ID = "_design/winged_couch"
 
       # @param database [WingedCouch::Native::Database]
       # @param data [Hash] hash of attributes
       # @param retreive_revision [true, false] retrieves revision from the database if true passed
       #
-      def initialize(database, data = {}, retreive_revision = false)
-        super(database, data.merge(_id: DOCUMENT_ID), retreive_revision)
+      def initialize(database, data = {})
+        super(database, data.merge(_id: DEFAULT_DOCUMENT_ID))
       end
 
       # Returns design document from passed database
@@ -25,8 +25,26 @@ module WingedCouch
       #
       def self.from(database)
         new(database).reload
-      rescue => e
-        Exceptions::NoDesignDocument.raise(database.name)
+      end
+
+      def path
+        database.path.join(_id, :design_document)
+      end
+
+      # Returns all views specified in design document
+      #
+      # @return Array<WingedCouch::Design::Views>
+      #
+      def views
+        data.fetch(:views, {}).map do |view_name, _|
+          Design::View.from(self, view_name)
+        end
+      end
+
+      def exist?
+        super
+      rescue Exceptions::NoDesignDocument
+        false
       end
 
     end

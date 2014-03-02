@@ -10,6 +10,7 @@ end
 
 require 'winged_couch'
 require 'pry'
+require 'tempfile'
 
 GEM_ROOT = File.expand_path("../../", __FILE__)
 
@@ -24,6 +25,7 @@ RSpec.configure do |config|
   config.order = 'random'
   config.include Helpers::FlushDBs,     :flush_dbs
   config.include Helpers::WithDatabase, :with_database
+  config.extend Helpers::Models,        :with_model
 end
 
 

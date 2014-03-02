@@ -2,14 +2,14 @@ module WingedCouch
   module Exceptions
     module Handlers
 
-      class DocumentMissing < Base
+      class NoDesignDocument < Base
 
         def respond?
-          not_found? and document_level?
+          not_found? and design_document_level?
         end
 
         def raise
-          ::WingedCouch::Exceptions::DocumentMissing.raise(http_path)
+          ::WingedCouch::Exceptions::NoDesignDocument.raise(db_name)
         end
 
       end

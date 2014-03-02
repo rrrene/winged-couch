@@ -44,6 +44,7 @@ module WingedCouch
       end
 
       def method_missing(method_name, *args, &block)
+        binding.pry
         if has_view?(method_name)
           has_views method_name
           view(method_name)
@@ -54,10 +55,6 @@ module WingedCouch
 
       private
 
-      def design_document
-        Design::Document.from(database)
-      end
-
       def default_query
         WingedCouch::Queries::QueryBuilder.new.
           with_model(self).
@@ -65,9 +62,9 @@ module WingedCouch
       end
 
       def has_view?(view_name, options = {})
-        result = views.include?(view_name.to_s)
+        result = views.any? { |view| view.view_name == view_name }
         if options[:raise]
-          raise Exceptions::UnknownView.new("Unknown view #{view_name.inspect}") unless result
+          Exceptions::UnknownView.raise(view_name) unless result
         end
         result
       end

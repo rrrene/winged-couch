@@ -22,6 +22,7 @@ module WingedCouch
 
   module Abstract
     autoload :Database, 'winged_couch/abstract/database'
+    autoload :Document, 'winged_couch/abstract/document'
   end
 
   module Native

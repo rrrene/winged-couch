@@ -2,14 +2,14 @@ module WingedCouch
   module Exceptions
     module Handlers
 
-      class DocumentMissing < Base
+      class InvalidDocument < Base
 
         def respond?
-          not_found? and document_level?
+          forbidden? and document_level?
         end
 
         def raise
-          ::WingedCouch::Exceptions::DocumentMissing.raise(http_path)
+          ::WingedCouch::Exceptions::InvalidDocument.raise(response["reason"])
         end
 
       end

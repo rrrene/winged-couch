@@ -2,6 +2,8 @@ require "winged_couch/exceptions/handlers/base"
 require "winged_couch/exceptions/handlers/no_database"
 require "winged_couch/exceptions/handlers/database_already_exist"
 require "winged_couch/exceptions/handlers/document_missing"
+require "winged_couch/exceptions/handlers/invalid_document"
+require "winged_couch/exceptions/handlers/no_design_document"
 
 module WingedCouch
   module Exceptions
@@ -10,7 +12,9 @@ module WingedCouch
       HANDLERS = [
         Handlers::NoDatabase,
         Handlers::DatabaseAlreadyExist,
-        Handlers::DocumentMissing
+        Handlers::DocumentMissing,
+        Handlers::InvalidDocument,
+        Handlers::NoDesignDocument
       ]
 
       attr_reader :request_type, :http_path, :args, :exception

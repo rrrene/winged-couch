@@ -2,6 +2,7 @@ require 'active_support/concern'
 
 module Helpers
   module WithDatabase
+
     extend ActiveSupport::Concern
 
     included do
