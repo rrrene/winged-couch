@@ -33,10 +33,14 @@ module WingedCouch
           self.new(HTTP.get(database.path.join(_id)))
         end
 
+        def design_document
+          database.design_document
+        end
+
         # Returns design views in the database
         #
         def views
-          database.design_views.keys
+          design_document.views
         end
 
         def count

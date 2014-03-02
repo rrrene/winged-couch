@@ -11,47 +11,10 @@ module WingedCouch
       let(:data_with_revision) { data.merge(_rev: "revision") }
       let(:document_with_revision) { Document.new(database, data_with_revision) }
 
-      describe "#initialize" do
-        describe "storing passsed data" do
-          subject(:document) { Document.new(database, data) }
-          its(:database) { should eq(database) }
-          its(:data)     { should have_key(:key) }
-        end
-
-        describe "retrieving revision" do
-          let(:retrieved_document) { Document.new(database, data, true) }
-
-          context "when document exist in database" do
-            before { document.save }
-
-            it "retrieves revision" do
-              retrieved_document.data[:_rev].should_not be_blank
-            end
-          end
-
-          context "when document doesn't exist in database" do
-            it "doesn't retrieves revision" do
-              retrieved_document.data[:_rev].should be_blank
-            end
-          end
-          
-        end
-      end
-
-      describe "#_id" do
-        it "returns document id" do
-          document._id.should eq(document_id)
-        end
-      end
-
-      describe "#_rev" do
-        it "returns revision of document (blank by default)" do
-          document._rev.should be_nil
-        end
-
-        it "fills after saving document" do
+      describe "#save" do
+        it "saves document to database" do
           document.save
-          document._rev.should be_a(String)
+          database.documents_count.should_not == 0
         end
       end
 
@@ -66,35 +29,23 @@ module WingedCouch
         end
       end
 
-      describe "#get" do
+      describe "#fetch_revision!" do
         context "when document wasn't saved" do
-          its(:get) { should be_nil }
+          it "raises exception" do
+            expect { document.fetch_revision! }.to raise_error(Exceptions::DocumentMissing)
+          end
         end
 
         context "when document was saved" do
           before { document.save }
 
-          its(:get) { should be_a(Hash) }
+          it "updates revision" do
+            document.should_receive(:_rev=).with(instance_of(String))
+            document.fetch_revision!
+          end
         end
       end
 
-      describe "#revision" do
-        context "when document wasn't saved" do
-          its(:revision) { should be_nil }
-        end
-
-        context "when document was saved" do
-          before { document.save }
-          its(:revision) { should be_a(String) }
-        end
-      end
-
-      describe "#save" do
-        it "saves document to database" do
-          document.save
-          database.documents_count.should_not == 0
-        end
-      end
 
       describe "#reload" do
         before do
@@ -105,25 +56,6 @@ module WingedCouch
 
         it "updates document with latest data in database" do
           document.data[:key].should eq("value")
-        end
-      end
-
-      describe "#inspect" do
-        context "when document saved" do
-          before { document.save }
-          let(:expected) { %{#<WingedCouch::Native::Document database="test", _id="document_id", _rev="1-59414e77c768bc202142ac82c2f129de", key="value">} }
-          its(:inspect) { should eq(expected) }
-        end
-
-        context "when document wasn't saved" do
-          let(:expected) { %{#<WingedCouch::Native::Document database="test", _id="document_id", _rev=nil, key="value">} }
-          its(:inspect) { should eq(expected) }
-        end
-
-        context "blank record" do
-          let(:expected) { %{#<WingedCouch::Native::Document database="test", _id=nil, _rev=nil>} }
-          subject(:document) { Document.new(database) }
-          its(:inspect) { should eq(expected) }
         end
       end
 
@@ -174,9 +106,41 @@ module WingedCouch
         end
 
         context  "when document doesn't exist" do
-          it "returns nil" do
-            Document.find(database, "missing-id").should be_nil
+          it "raises exception" do
+            expect { Document.find(database, "missing-id") }.to raise_error(Exceptions::DocumentMissing)
           end
+        end
+      end
+
+      describe "#errors" do
+        context "when document was saved" do
+          before { document.save }
+
+          it "return blank array" do
+            document.errors.should eq([])
+          end
+        end
+
+        context "when document wasn't saved" do
+          let(:error_message) { "Name can't be blank" }
+          let(:validation) do
+            %Q{
+              function(newDoc) {
+                if (newDoc.name == null)
+                  throw({forbidden: "#{error_message}"})
+                }
+            }
+          end
+
+          before do
+            Design::Validation.upload(database, :name, validation)
+            document.save
+          end
+
+          it "returns list of errors" do
+            document.errors.should eq([error_message])
+          end
+
         end
       end
 

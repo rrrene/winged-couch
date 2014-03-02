@@ -22,6 +22,7 @@ module WingedCouch
 
   module Abstract
     autoload :Database, 'winged_couch/abstract/database'
+    autoload :Document, 'winged_couch/abstract/document'
   end
 
   module Native
@@ -38,8 +39,8 @@ module WingedCouch
 
   module Queries
     autoload :BaseBuilder,  'winged_couch/queries/base_builder'
-    autoload :QueryBuilder, 'winged_couch/queries/query_builder'
-    autoload :Result,       'winged_couch/queries/result'
+    autoload :ViewBuilder,  'winged_couch/queries/view_builder'
+    autoload :ViewResultProcessor, 'winged_couch/queries/view_result_processor'
   end
 
   module Tools

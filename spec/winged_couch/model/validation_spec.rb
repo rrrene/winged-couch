@@ -2,14 +2,12 @@ require 'spec_helper'
 
 module WingedCouch
   module Models
-    describe Validation, :with_database do
+    describe Validation, :with_model do
 
-      class ModelWithValidation < WingedCouch::Model
+      model :ModelWithValidation do
         attribute :name, String
         must_exist :name, message: "name must exist"
       end
-
-      let(:database) { ModelWithValidation.database }
 
       before do
         ModelWithValidation.upload_validation!

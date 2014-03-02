@@ -2,14 +2,12 @@ require 'spec_helper'
 
 module WingedCouch
   module Design
-    describe Validation, :with_database do
+    describe Validation, :with_model do
 
-      class ModelWithValidation < WingedCouch::Model
+      model :TestModel do
         attribute :name, String
         attribute :age,  Fixnum
       end
-
-      let(:database) { ModelWithValidation.database }
 
       let(:name_validation_message) { "name can't be blank" }
       let(:age_validation_message) { "age can't be blank" }
@@ -35,8 +33,8 @@ module WingedCouch
           Validation.upload(database, :age, age_validation)
         end
 
-        let(:invalid_record) { ModelWithValidation.new }
-        let(:valid_record) { ModelWithValidation.new(name: "Name", age: 45) }
+        let(:invalid_record) { TestModel.new }
+        let(:valid_record) { TestModel.new(name: "Name", age: 45) }
 
         it "doesn't allow to insert invalid records" do
           invalid_record.save.should be_false

@@ -7,7 +7,7 @@ module WingedCouch
     #
     class View
 
-      attr_accessor :design_document, :view_name
+      attr_reader :design_document, :view_name
       delegate :database, to: :design_document
 
       def initialize(design_document, view_name)
@@ -50,6 +50,16 @@ module WingedCouch
         end
 
         alias_method :from, :new
+      end
+
+      def inspect
+        %Q{#<#{self.class.name} name="#{view_name}", database="#{database.name}">}
+      end
+
+      def ==(other)
+        other.is_a?(self.class) &&
+          other.view_name == view_name &&
+          other.design_document == design_document
       end
 
       private

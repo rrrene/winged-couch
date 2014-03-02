@@ -31,6 +31,10 @@ module WingedCouch
           exception.is_a?(RestClient::PreconditionFailed)
         end
 
+        def forbidden?
+          exception.is_a?(RestClient::Forbidden)
+        end
+
         def database_level?
           http_path.level == :database
         end
@@ -39,6 +43,9 @@ module WingedCouch
           http_path.level == :document
         end
 
+        def design_document_level?
+          http_path.level == :design_document
+        end
 
       end
     end
