@@ -18,3 +18,5 @@ tmp
 .rspec
 .rvmrc
 .c9revisions/
+.ruby-version
+.ruby-gemset
