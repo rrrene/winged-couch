@@ -42,12 +42,6 @@ module WingedCouch
     autoload :ViewBuilder,  'winged_couch/queries/view_builder'
     autoload :ViewResultProcessor, 'winged_couch/queries/view_result_processor'
   end
-
-  module Tools
-    autoload :Base,            'winged_couch/tools/base'
-    autoload :ViewsUploader,   'winged_couch/tools/views_uploader'
-    autoload :DatabaseCreator, 'winged_couch/tools/database_creator'
-  end
 end
 
 require 'rest-client'
