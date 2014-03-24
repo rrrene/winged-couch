@@ -1,35 +1,34 @@
 require 'spec_helper'
 
 module WingedCouch
-  describe ViewsLoader, :with_database do
+  describe ViewsLoader, :with_model do
 
-    let(:model) { ModelWithDesignDoc }
-    let(:database) { ModelWithDesignDoc.database }
-    let(:loader) { ViewsLoader }
-    let(:views) { ["all", "strings", "by_name", "four", "key_objects"] }
-
-    before(:each) do
-      loader.filepath = File.join(GEM_ROOT, "spec", "support", "views.js")
+    model :TestModel do
+      attribute :name, String
     end
+
+    views(all: { map: "" }, favourite: { map: "" })
+
+    let(:database) { ::TestModel.database }
+
+    let(:design_document) { TestModel.design_document }
 
     describe ".fetch" do
       it "loads JS fucntions from specified file" do
-        ViewsLoader.fetch(ModelWithDesignDoc).keys.should eq views
+        ViewsLoader.fetch(TestModel).keys.should eq ["all", "favourite"]
       end
     end
 
     describe ".upload_views_for" do
       it "it creates views" do
-        ViewsLoader.upload_views_for(ModelWithDesignDoc)
-        ModelWithDesignDoc.views.should eq views
+        ViewsLoader.upload_views_for(TestModel)
+        TestModel.views.map(&:view_name).should eq ["all", "favourite"]
       end
 
       context "updating" do
-        before { ViewsLoader.upload_views_for(ModelWithDesignDoc) }
-
         it "updates it" do          
-          ViewsLoader.upload_views_for(ModelWithDesignDoc)
-          ModelWithDesignDoc.views.should eq views
+          2.times { ViewsLoader.upload_views_for(TestModel) }
+          TestModel.views.map(&:view_name).should eq ["all", "favourite"]
         end
       end
     end

@@ -19,11 +19,6 @@ module WingedCouch
     include ::WingedCouch::Models::Hooks
     extend  ::WingedCouch::Models::Bulk
 
-    def self.inherited(klass)
-      klass.database.create unless klass.database.exist?
-      super
-    end
-
     if defined?(ActiveModel) # Rails support
       extend  ActiveModel::Naming
       extend  ActiveModel::Translation

@@ -1,32 +1,12 @@
-require 'active_support/core_ext/hash'
-require 'active_support/ordered_hash'
-require 'active_support/json'
-
-require 'winged_couch/native/documents/inspection'
-require 'winged_couch/native/documents/accessors'
-require 'winged_couch/native/documents/comparison'
-
 module WingedCouch
   module Native
 
     # Low-level class for working with documents
     #
-    class Document
+    class Document < Abstract::Document
 
-      include Documents::Inspection
-      include Documents::Accessors
-      include Documents::Comparison
-
-      attr_accessor :database
-      attr_accessor :data
-
-      def initialize(database, data = {}, retrieve_revision = false)
-        @database = database
-        @data = data.with_indifferent_access
-        if retrieve_revision
-          self._rev ||= revision
-          @data.delete(:_rev) unless self._rev
-        end
+      def fetch_revision!
+        self._rev = get["_rev"]
       end
 
       # Returns true if document exist
@@ -50,8 +30,8 @@ module WingedCouch
           response = HTTP.put(path, data)
           @data[:_rev] = response["rev"]
           true
-        rescue RestClient::Forbidden => e
-          errors << JSON.parse(e.response)["reason"]
+        rescue Exceptions::InvalidDocument => e
+          errors << e.message
           false
         end
       end
@@ -93,13 +73,8 @@ module WingedCouch
       # @return [WingedCouch::Native::Document]
       #
       def self.find(database, document_id)
-        document = self.new(database, _id: document_id)
-        begin
-          data = HTTP.get(document.path)
-          self.new(database, data)
-        rescue Exceptions::DocumentMissing
-          nil
-        end
+        data = { _id: document_id }
+        self.new(database, data).reload
       end
 
       def errors
@@ -107,7 +82,7 @@ module WingedCouch
       end
 
       def path
-        base_path.join(_id, :document)
+        database.path.join(_id, :document)
       end
 
       private
@@ -117,13 +92,8 @@ module WingedCouch
       # @return [Hash]
       #
       def get
-        HTTP.get(path, default_params) rescue nil
+        HTTP.get(path, default_params)
       end
-
-      def base_path
-        database.path
-      end
-
 
       def default_params
         _rev ? { rev: _rev } : {}

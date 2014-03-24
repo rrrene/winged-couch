@@ -20,7 +20,7 @@ module WingedCouch
       # @return [Hash] in format { "view name" => { "map" => "function() { some(javascript); }" } }
       #
       def fetch(klass)
-        js_klass = "#{klass.name}Views"
+        js_klass = "#{klass.name.delete('::')}Views"
         begin
           json = v8_context.eval("JSON.stringify(stringifyObject(#{js_klass}))")
           JSON.parse(json)
@@ -35,11 +35,7 @@ module WingedCouch
       # @param klass [Class] WingedCouch::Model
       #
       def upload_views_for(klass)
-        database = klass.database
-        database.create unless database.exist?
-
-        design_document = Design::Document.new(database, {}, true)
-        design_document.save unless design_document.exist?
+        design_document = klass.design_document
 
         fetch(klass).each do |view_name, functions|
           functions.each do |function_name, function_code|
@@ -51,7 +47,7 @@ module WingedCouch
       private
 
       def v8_context
-        @context ||= V8::Context.new do |v8|
+        V8::Context.new do |v8|
           v8.eval(File.read(filepath))
           v8.eval(STRINGIFY_JS)
         end

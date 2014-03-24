@@ -8,15 +8,24 @@ module WingedCouch
       subject(:document) { Document.new(database, key: "value") }
 
       describe "#initialize" do
-        its(:database) { should eq(database) }
-        its(:data) { should have_key(:key) }
+        it "overrides passed document id" do
+          document._id.should eq(Document::DEFAULT_DOCUMENT_ID)
+        end
       end
 
       describe ".from" do
-        before { document.save }
+        context "when design document doesn't exist" do
+          it "raises exception" do
+            expect { Document.from(database) }.to raise_error(Exceptions::NoDesignDocument)
+          end
+        end
 
-        it "fetches design document from database" do
-          Document.from(database).should eq(document)
+        context "when design document exists" do
+          before { document.save }
+
+          it "fetches design document from database" do
+            Document.from(database).should eq(document)
+          end
         end
       end
 

@@ -2,34 +2,45 @@ require 'spec_helper'
 
 module WingedCouch
   module Models
-    describe API, :with_database do
+    describe API, :with_model do
 
-      let(:database) { OneFieldModel.database }
-      let(:record) { OneFieldModel.new(field: "value") }
+      model :OneFieldModel do
+        attribute :field, String
+      end
 
-      it "#new" do
-        record.field.should eq "value"
+      subject(:record) { OneFieldModel.new(field: "value") }
+
+      describe "#new" do
+        its(:field) { should eq("value") }
       end
 
       it ".create" do
-        record_id = OneFieldModel.create(field: "value")._id
-        HTTP.get(database.path.join(record_id)).should be_a(Hash)
+        expect { record.save }.to change { record._id }
       end
 
-      it "#inspect" do
-        record.inspect.should eq "#<OneFieldModel field: \"value\", _id: nil, _rev: nil>"
+      describe "#inspect" do
+        let(:expected) { %Q{#<OneFieldModel field: "value", _id: nil, _rev: nil>} }
+        its(:inspect) { should eq(expected) }
       end
 
-      it ".find" do
-        record = OneFieldModel.create(field: 'value')
-        OneFieldModel.find(record._id).should eq(record)
+      describe ".find" do
+        before { record.save }
+
+        it "finds record by id" do
+          OneFieldModel.find(record._id).should eq(record)
+        end
       end
 
-      it "#update" do
-        record = OneFieldModel.create(field: 'value1')
-        record.update(field: 'value2')
-        OneFieldModel.find(record._id).field.should eq('value2')
-        record.field.should eq('value2')
+      describe "#update" do
+        before { record.save }
+
+        it "updates data in record" do
+          expect { record.update(field: "value1") }.to change { record.field }
+        end
+
+        it "saves record" do
+          expect { record.update(field: "value1") }.to change { record._rev }
+        end
       end
 
     end

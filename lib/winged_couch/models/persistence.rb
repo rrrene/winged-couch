@@ -93,7 +93,7 @@ module WingedCouch
       # Returns true if object is persisted
       #
       def persisted?
-        _id && _rev
+        !!(_id && _rev)
       end
 
     end

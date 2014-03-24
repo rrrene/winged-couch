@@ -20,3 +20,6 @@ tmp
 .c9revisions/
 .ruby-version
 .ruby-gemset
+.c9revisions
+.ruby-gemset
+.ruby-version

@@ -2,19 +2,17 @@ require 'spec_helper'
 
 module WingedCouch
   module Models
-    describe Bulk, :with_database do
+    describe Bulk, :with_model do
 
-      class Model < ::WingedCouch::Model
+      model :BulkModel do
         attribute :name, String
       end
 
-      let(:database) { Model.database }
-
       context "bulk insert" do
         it "creates records" do
-          Model.bulk do
+          BulkModel.bulk do
             10.times do |i|
-              Model.create(name: "Name #{i}")
+              BulkModel.create(name: "Name #{i}")
             end
           end
 
@@ -24,9 +22,9 @@ module WingedCouch
         it "creates records in one request" do
           HTTP.should_receive(:post).once
 
-          Model.bulk do
+          BulkModel.bulk do
             10.times do |i|
-              Model.create(name: "Name #{i}")
+              BulkModel.create(name: "Name #{i}")
             end
           end
         end
