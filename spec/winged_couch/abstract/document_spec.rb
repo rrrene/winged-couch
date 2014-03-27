@@ -23,12 +23,12 @@ module WingedCouch
 
       describe "#inspect" do
         context "full document" do
-          let(:expected) { %{#<WingedCouch::Abstract::Document database="test", _id="document_id", _rev="revision", key="value">} }
+          let(:expected) { %{#<WingedCouch::Abstract::Document data={"key"=>"value", "_id"=>"document_id", "_rev"=>"revision"}>} }
           its(:inspect) { should eq(expected) }
         end
 
         context "blank record" do
-          let(:expected) { %{#<WingedCouch::Abstract::Document database="test", _id=nil, _rev=nil>} }
+          let(:expected) { %{#<WingedCouch::Abstract::Document data={}>} }
           before { document.data = Hash.new }
           its(:inspect) { should eq(expected) }
         end
@@ -61,7 +61,7 @@ module WingedCouch
       end
 
       describe "#==" do
-        let(:data) { { key: "value" } }
+        let(:data) { { _id: "id", _rev: "rev", key: "value" } }
 
         let(:doc1) { Document.new(database, data) }
         let(:doc2) { Document.new(database, data) }

@@ -1,21 +1,9 @@
 require "winged_couch/exceptions/handlers/base"
-require "winged_couch/exceptions/handlers/no_database"
-require "winged_couch/exceptions/handlers/database_already_exist"
-require "winged_couch/exceptions/handlers/document_missing"
-require "winged_couch/exceptions/handlers/invalid_document"
-require "winged_couch/exceptions/handlers/no_design_document"
 
 module WingedCouch
   module Exceptions
-    class Handler
 
-      HANDLERS = [
-        Handlers::NoDatabase,
-        Handlers::DatabaseAlreadyExist,
-        Handlers::DocumentMissing,
-        Handlers::InvalidDocument,
-        Handlers::NoDesignDocument
-      ]
+    class Handler
 
       attr_reader :request_type, :http_path, :args, :exception
 
@@ -33,7 +21,40 @@ module WingedCouch
         end
         raise exception # When nothing found...
       end
-      
+
+      class DatabaseAlreadyExist < Handlers::Base
+        respond? { precondition_failed? and database_level? }
+        call { WingedCouch::Exceptions::DatabaseAlreadyExist.raise(db_name) }
+      end
+
+      class NoDatabase < Handlers::Base
+        respond? { not_found? and database_level? }
+        call { WingedCouch::Exceptions::NoDatabase.raise(db_name) }
+      end
+
+      class DocumentMissing < Handlers::Base
+        respond? { not_found? and document_level? }
+        call { WingedCouch::Exceptions::DocumentMissing.raise(http_path) }
+      end
+
+      class InvalidDocument < Handlers::Base
+        respond? { forbidden? and document_level? }
+        call { WingedCouch::Exceptions::InvalidDocument.raise(response["reason"]) }
+      end
+
+      class NoDesignDocument < Handlers::Base
+        respond? { not_found? and design_document_level? }
+        call { WingedCouch::Exceptions::NoDesignDocument.raise(db_name) }
+      end
+
+      HANDLERS = [
+        NoDatabase,
+        DatabaseAlreadyExist,
+        DocumentMissing,
+        InvalidDocument,
+        NoDesignDocument
+      ]
+
     end
   end
 end

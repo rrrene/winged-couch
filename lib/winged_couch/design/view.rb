@@ -53,7 +53,7 @@ module WingedCouch
       end
 
       def inspect
-        %Q{#<#{self.class.name} name="#{view_name}", database="#{database.name}">}
+        %Q{#<#{self.class} name="#{view_name}", database="#{database.name}">}
       end
 
       def ==(other)

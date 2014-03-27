@@ -35,16 +35,20 @@ module WingedCouch
           exception.is_a?(RestClient::Forbidden)
         end
 
-        def database_level?
-          http_path.level == :database
+        [:database, :document, :design_document].each do |http_path_level|
+          define_method "#{http_path_level}_level?" do
+            http_path.level == http_path_level
+          end
         end
 
-        def document_level?
-          http_path.level == :document
-        end
+        class << self
+          def respond?(&block)
+            define_method(:respond?, &block)
+          end
 
-        def design_document_level?
-          http_path.level == :design_document
+          def call(&block)
+            define_method(:call, &block)
+          end
         end
 
       end

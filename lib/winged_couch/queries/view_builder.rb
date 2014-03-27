@@ -81,6 +81,14 @@ module WingedCouch
         result
       end
 
+      def path
+        builder.path
+      end
+
+      def params
+        builder.params
+      end
+
       private
 
       def result
