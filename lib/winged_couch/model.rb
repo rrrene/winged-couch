@@ -19,6 +19,11 @@ module WingedCouch
     include ::WingedCouch::Models::Hooks
     extend  ::WingedCouch::Models::Bulk
 
+    def self.inherited(klass)
+      super
+      ViewsLoader.upload_views_for(klass)
+    end
+
     if defined?(ActiveModel) # Rails support
       extend  ActiveModel::Naming
       extend  ActiveModel::Translation
