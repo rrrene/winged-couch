@@ -72,9 +72,11 @@ module WingedCouch
       end
 
       def design_document
-        doc = Design::Document.new(self)
-        doc.exist? ? doc.reload : doc.save
-        doc
+        @design_document ||= begin
+          doc = Design::Document.new(self)
+          doc.exist? ? doc.reload : doc.save
+          doc
+        end
       end
 
       private
