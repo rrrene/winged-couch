@@ -4,7 +4,7 @@
 [![Code Climate](https://codeclimate.com/github/iliabylich/winged-couch.png)](https://codeclimate.com/github/iliabylich/winged-couch)
 [![Coverage Status](https://coveralls.io/repos/iliabylich/winged-couch/badge.png)](https://coveralls.io/r/iliabylich/winged-couch)
 [![Dependency Status](https://gemnasium.com/iliabylich/winged-couch.png)](https://gemnasium.com/iliabylich/winged-couch)
-[![Inline docs](http://inch-pages.github.io/github/iliabylich/winged-couch.png)](http://inch-pages.github.io/github/iliabylich/winged-couch)
+[![Inline docs](http://inch-ci.org/github/iliabylich/winged-couch.png)](http://inch-ci.org/github/iliabylich/winged-couch)
 
 ## Usage
 
